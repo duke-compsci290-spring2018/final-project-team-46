@@ -91,12 +91,36 @@
                 <li @click="openModal(traill)">{{traill[2].name}}</li>
             </ul>
         </div>
-      
-    </div>
+        <div v-show="worldMap">
+            <p id="check">Helo</p>
+            <h1>World Map</h1>
+            <p>The world map below displays hikes from the mashape trail api. By hovering over a trail marked by a green dot, the trail's information will display to the right.</p>
+            <hr/>
+                
+            <div id="map">
+                <svg id="svg"></svg>
+            </div>
+            <div id="other">
+            <h4 id="info"></h4>
+                <p id="location"></p>
+                <p id="activity"></p>
+                <p id="length"></p>
+                <p id="description"></p>
+                <a id="url"></a>
+                <br>
+                <br>
+                <img id="pic" src="" alt="">
+            </div>
+                </div>
+            </div>
   </div>
 </template>
 
 <script>
+import * as d3 from 'd3';
+import MAPDATA from './assets/ca.json';
+var VueD3 = require('vue-d3')
+//Vue.use(VueD3)
 var myHeaders = new Headers();
 myHeaders.append("X-Mashape-Key", "UuMqkwSygmmsh0zqWC7yGzmgn0yYp1LN0H3jsnTFzEQasUDdyB");
 
@@ -220,6 +244,8 @@ export default {
         descriptionModal: '',
         urlModal:'',
         imgModal: '',
+        worldMap: false,
+        mapData: MAPDATA,
     }
   },
     computed: {
@@ -234,13 +260,62 @@ export default {
             this.disMessage=false;
             this.displayResults=false;
             this.searchQs=false;
+            this.worldMap=false;
         },
+//        zoomed() {
+//            d3.select("svg").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+//        },
         
         showMap(){
             this.categDisplay=false;
             this.disMessage=false;
             this.displayResults=false;
             this.searchQs=false;
+            this.worldMap=true;
+            //document.getElementById("check").innerhtml="hello";
+            //d3.select("check").text("hello");
+            document.getElementById("check").style.color="blue";
+            
+            var svg = d3.select("svg");
+            var projection = d3.geoMercator()
+                
+            var path = d3.geoPath()
+              .projection(projection);
+            console.log("here3");
+            //var url = "assets/ca.json";
+            //d3.json(url, function(err, geoData) {
+                //console.log(geoData);
+              d3.select("svg").append("path")
+                .attr("d", path(this.mapData))
+                .attr("stroke", "black")
+                .attr("fill", "lightblue")
+            //})
+            
+            var i;
+            for (i=0; i<this.allHikes.length; i++){
+                    svg.selectAll("pin")
+                    .data([this.allHikes[i]]).enter()
+                    .append("circle")
+                    .attr("cx", function (d) { return projection(d)[0]; })
+                    .attr("cy", function (d) { return projection(d)[1]; })
+                    .attr("r", "4px")
+                    .attr("fill", "darkgreen")
+                  //make hover so that will display info to the right
+                    .on("mouseover", function(d){
+                        console.log(d[2]);
+                        d3.select("#info").text("Trail Name: "+d[2].name);
+                        d3.select("#location").text("Location: "+d[2].city);
+                        d3.select("#activity").text("Activity Type: "+d[2].activity);
+                        d3.select("#length").text("Length: "+d[2].length+" miles");
+                        d3.select("#description").text("Description: "+d[2].description);
+                        d3.select("#url").attr("href", d[2].url);
+                        d3.select("#url").text("More Trail Info");
+                        d3.select("#pic").attr("src", d[2].pic);
+                        d3.select("#pic").attr("alt", "trail thumbnail"); 
+                    })
+            }
+            //var zoom = d3.zoom()
+                //.on("zoom", this.zoomed);
         },
         
         showCategory(){
@@ -248,6 +323,7 @@ export default {
             this.disMessage=false;
             this.displayResults=false;
             this.searchQs=false;
+            this.worldMap=false;
             
         },
         
@@ -270,6 +346,7 @@ export default {
         search(){
             this.categDisplay=false;
             this.searchQs=true;
+            this.worldMap=false;
         },
         
         searchCriteria(){
@@ -520,5 +597,23 @@ a {
 .close:focus {
     color: darkred;
     cursor: pointer;
+    
 }
+    #map{
+          width: 900px;
+          height: 600px;
+      }
+    #svg { 
+        background-color: white;
+        width: 100%; 
+        height: 600px;
+        margin-left: auto;
+      }
+        #other{
+          width: 275px;
+          position: absolute;
+          top: 350px;
+          right: 0px;
+          height: 600px;
+      }
 </style>
