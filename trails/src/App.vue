@@ -18,17 +18,11 @@
         
         <div v-show="categDisplay" id="display">
             <ul v-for="trail in categoryTrails">
-                <li :id="trail[2].id" @click="openModal(trail)">{{ trail[2].name }}</li>
-                <li class="trailInList">
-                    <div class="trailInfo">
-                        <h4>{{trail.name}}</h4>
-                    </div>
-    
-                </li>
+                <li :id="trail[2].id" class="nameClick" @click="openModal(trail)">{{ trail[2].name }}</li>
             </ul>
         </div>
         
-        <div id="hikeModal" v-show="hikeModal" class="modal">
+        <div v-show="hikeModal" class="modal">
             <div @click="closeModal()" class="close">&times;</div>
             <div class="modal-content">
                 <h4 id="infoModal">{{infoModal}}</h4>
@@ -88,11 +82,10 @@
         </div>
         <div v-show="displayResults" id="searchResults">
             <ul v-for="traill in criteriaResults">
-                <li @click="openModal(traill)">{{traill[2].name}}</li>
+                <li class="nameClick" @click="openModal(traill)">{{traill[2].name}}</li>
             </ul>
         </div>
         <div v-show="worldMap">
-            <p id="check">Helo</p>
             <h1>World Map</h1>
             <p>The world map below displays hikes from the mashape trail api. By hovering over a trail marked by a green dot, the trail's information will display to the right.</p>
             <hr/>
@@ -111,15 +104,99 @@
                 <br>
                 <img id="pic" src="" alt="">
             </div>
-                </div>
+        </div>
+        
+        <div v-show="planTrip">
+            <calendar-view :events="events" :show-event-times="eventTimes" @click-date="tryDate"></calendar-view>
+            <div v-show="addEvent">
+                <p>If you would like to add your selected trail to your calendar please select the start and end date (optional)</p>
+                <p>To add:</p>
+                <p>{{addHikeObj}}</p>
+                <p>Start Date:</p>
+                <input id="hikeDateStart" v-model="newStartDate" type="date">
+                <p>End Date:</p>
+                <input id="hikeDateEnd" v-model="newEndDate" type="date">
+                <button @click="addHiketoCalendar">Add Hike to Calendar</button>
             </div>
+            <hr/>
+            <div v-show="addTrip" id="addTrip">
+                <p>Add a Trip to your Calendar!</p>
+                <input placeholder="Trip Name" v-model="newTripName">
+                <p>Trip Start Date</p>
+                <input id="tripDateStart" v-model="newTripStartDate" type="date">
+                <p>Trip End Date</p>
+                <input id="tripDateEnd" v-model="newTripEndDate" type="date">
+                <br>
+                <br>
+                <button @click="addTriptoCalendar">Add Trip to Calendar</button>
+                <p>Click any of the below hikes displayed on the map to view hike info. Double click to add this hike to your calendar. </p>
+            
+            </div>
+            <hr/>
+                <gmap-map
+                    :center="center"
+                    :zoom="2"
+                    @click="addMarker"
+                    style="height: 480px;"
+                    >
+                    <gmap-marker
+                        v-for="(m, index) in markers"
+                        :key="index+3"
+                        :position="m.position"
+                        :clickable="true"
+                        :draggable="true"
+                        @click="center = m.position"
+                    >
+                    </gmap-marker>
+                    <gmap-circle
+                        v-for="(c, index) in circles"
+                        :key="c.id"
+                        :center="c.center"
+                        :radius="c.radius"
+                        :options="c.options"
+                        @mouseover="infoText = c.text"
+                        @mouseout="infoText = ''"
+                        @dblclick="addTrailEvent(c)"
+                    ></gmap-circle>
+                    <div slot="visible">
+                        <div style="bottom: 0; left: 0; background-color: blue; color: white; position: absolute; z-index: 100">
+                          {{infoText}}
+                        </div>
+                    </div>
+                </gmap-map>
+            <div v-show="closeByResults">
+                <ul v-for="close in closeBy">
+                    <li>
+                        <p>Near by to your pin:</p>
+                        <p>{{close.pin.name}}</p>
+                        <p>Trails:</p>
+                        <ul v-for="hike in close.hike">
+                            <p @click="openModal(hike)">{{hike[2].name}}</p>
+                            <button @click="addTrailEvent(hike)">Add to Calendar</button>
+                        </ul>
+                    </li>
+                </ul>
+    
+            </div>
+    
+        </div>
+    </div>
   </div>
 </template>
 
 <script>
+import CalendarView from "vue-simple-calendar";
+//import CalendarView from "./components/CalendarView"
+
+require("vue-simple-calendar/dist/static/css/default.css");
+    
 import * as d3 from 'd3';
 import MAPDATA from './assets/ca.json';
 var VueD3 = require('vue-d3')
+
+import { usersRef, storageRef } from './database.js'
+import Authentication from './components/Authentication'
+    
 //Vue.use(VueD3)
 var myHeaders = new Headers();
 myHeaders.append("X-Mashape-Key", "UuMqkwSygmmsh0zqWC7yGzmgn0yYp1LN0H3jsnTFzEQasUDdyB");
@@ -177,7 +254,7 @@ var filters= {
     Long: function (hikes) {
         var categhikes=[];
         var i;
-        console.log(hikes.length)
+        //console.log(hikes.length)
         for (i=0; i<hikes.length; i++){
             if (hikes[i][2].length!=="no length recorded"){
                 if (hikes[i][2].length>12){
@@ -185,7 +262,7 @@ var filters= {
                 }
             }
         }
-        console.log(categhikes)
+        //console.log(categhikes)
         return categhikes;
     },
     Medium: function (hikes) {
@@ -211,6 +288,13 @@ var filters= {
     All: function (hikes){
         return hikes;
     }
+}
+var circleOptions = {
+    strokeColor: '#FF0000',
+    strokeOpacity: 0.8,
+    strokeWeight: 1,
+    fillColor: '#FF0000',
+    fillOpacity: 0.3
 }
     
 export default {
@@ -246,13 +330,49 @@ export default {
         imgModal: '',
         worldMap: false,
         mapData: MAPDATA,
+        planTrip: false, 
+        infoText: '',
+        center: {
+                lat: 40,
+                lng: -35
+        },
+        markers: [
+                {
+                    position: { lat: 35.99, lng: -78.89 }, // Durham, NC
+                    name: "durr"
+                }
+        ],
+        circles: [],
+        events: [
+            {
+                startDate: "2018-04-19",
+                endDate: "2018-04-22",
+                title: "My Trip To California"
+            }
+            
+        ],
+        eventTimes: true,
+        addEvent: false,
+        addHikeObj: '',
+        newStartDate: '',
+        newEndDate: '',
+        addTrip: false,
+        newTripName: '',
+        newTripStartDate: '',
+        newTripEndDate: '',
+        closeBy: [],
+        closeByResults: false,
     }
   },
+    components: {
+        CalendarView,
+        Authentication
+    },
     computed: {
         categoryTrails(){
             console.log(this.categ)
             return filters[this.categ](this.allHikes);
-        }
+        },
     },
     methods: {
         createTrip(){
@@ -261,6 +381,108 @@ export default {
             this.displayResults=false;
             this.searchQs=false;
             this.worldMap=false;
+            this.planTrip=true;
+            var i;
+            for (i=0; i<this.allHikes.length;i++){
+                this.circles.push({
+                        id: this.allHikes[i][2].id,
+                        center: {
+                            lng: this.allHikes[i][0],
+                            lat: this.allHikes[i][1]
+                        },
+                        radius: 60000,
+                        text: this.allHikes[i][2].name
+                        
+                    })
+            }
+            this.addTrip=true;
+            
+        },
+        addMarker (event) {
+            var name=prompt("Please enter a name for your marker:", "Ex. My Start Location")
+            console.log(name)
+            if (name!=null){
+                this.markers.push({
+                    position: { lat: event.latLng.lat(), lng: event.latLng.lng() },
+                    name: name
+                })
+                var i;
+                var nearMarkers=[];
+                for (i=0;i<this.markers.length; i++){
+                    var j;
+                    var mlongmax=Math.abs(this.markers[i].position.lng)+2;
+                    var mlongmin=Math.abs(this.markers[i].position.lng)-2;
+                    var mlatmax=Math.abs(this.markers[i].position.lat)+2;
+                    var mlatmin=Math.abs(this.markers[i].position.lat)-2;
+                    console.log(mlongmax+"and"+mlongmin)
+                    var markercloses=[];
+                    for (j=0; j<this.allHikes.length; j++){
+
+                        var hlong=Math.abs(this.allHikes[j][0]);
+                        console.log(hlong)
+                        var hlat=Math.abs(this.allHikes[j][1]);
+                        if (hlong<mlongmax && hlong>mlongmin && hlat<mlatmax && hlat>mlatmin){
+                            markercloses.push(this.allHikes[j])
+                        }
+                    }
+                    nearMarkers.push({
+                                pin: this.markers[i],
+                                hike: markercloses
+                            });
+                    console.log(nearMarkers)
+                }
+                this.closeBy=nearMarkers;
+            }
+            this.closeByResults=true;
+        },
+        
+        tryDate (date){
+            console.log("here")
+        },
+        
+        addTrailEvent(trail){
+            this.addEvent=true;
+            console.log(trail);
+            if (trail.text!==null){
+                this.addHikeObj=trail.text;
+                console.log("trail.text"+trail.text)
+            }
+            if (trail[2].name!==null){
+                this.addHikeObj=trail[2].name;
+                console.log("herenow")
+            }
+        },
+        
+        addHiketoCalendar() {
+            //document.getElementById()
+            if (this.newEndDate!==''){
+                this.events.push({
+                    title: this.addHikeObj,
+                    startDate: this.newStartDate,
+                    endDate: this.newEndDate,
+                })
+            }
+            else {
+                this.events.push({
+                    title: this.addHikeObj,
+                    startDate: this.newStartDate,
+                })
+            }
+            console.log("added")
+            this.newStartDate='';
+            this.newEndDate='';
+        },
+        
+        addTriptoCalendar(){
+            console.log("addtrip")
+            this.events.push({
+                title: this.newTripName,
+                startDate: this.newTripStartDate,
+                endDate: this.newTripEndDate
+            })
+            this.newTripName='';
+            this.newTripStartDate='';
+            this.newTripEndDate='';
         },
 //        zoomed() {
 //            d3.select("svg").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
@@ -271,10 +493,8 @@ export default {
             this.disMessage=false;
             this.displayResults=false;
             this.searchQs=false;
+            this.planTrip=false;
             this.worldMap=true;
-            //document.getElementById("check").innerhtml="hello";
-            //d3.select("check").text("hello");
-            document.getElementById("check").style.color="blue";
             
             var svg = d3.select("svg");
             var projection = d3.geoMercator()
@@ -324,6 +544,19 @@ export default {
             this.displayResults=false;
             this.searchQs=false;
             this.worldMap=false;
+            this.planTrip=false;
+            
+/*            var i;
+            for (i=0;i<this.allHikes.length;i++){
+                var j;
+                for (j=0; j<this.allHikes.length;j++){
+                    if (j!=i){
+                        if (this.allHikes[i][2].id===this.allHikes[j][2].id){
+                            console.log(this.allHikes[i][2].id)
+                        }
+                    }
+                }
+            }*/
             
         },
         
@@ -333,7 +566,6 @@ export default {
         
         openModal(trail){
             this.hikeModal=true;
-            console.log(trail);
             this.infoModal=trail[2].name;
             this.locationModal=trail[2].city;
             this.activityModal=trail[2].activity;
@@ -347,6 +579,7 @@ export default {
             this.categDisplay=false;
             this.searchQs=true;
             this.worldMap=false;
+            this.planTrip=false;
         },
         
         searchCriteria(){
@@ -616,4 +849,8 @@ a {
           right: 0px;
           height: 600px;
       }
+    
+    .nameClick:hover{
+        cursor: pointer;
+    }
 </style>
