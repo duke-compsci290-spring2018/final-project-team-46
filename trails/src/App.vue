@@ -8,20 +8,24 @@
             <button @click="dropDown">View Trails by Category</button>
             <i></i>
         </div>-->
+        <button>View Trails by Category
         <select @click="showCategory" id="categorySelect" class="nav" v-model="categ" name="View Trails by Category">
+            <option></option>
             <option>All</option>
             <option>Long</option>
             <option>Medium</option>
             <option>Short</option>
         </select>
+            </button>
         <button @click="createTrip" class="nav">Create a Trip</button>
+        <br>
         
         <div v-show="categDisplay" id="display">
             <ul v-for="trail in categoryTrails">
                 <li :id="trail[2].id" class="nameClick" @click="openModal(trail)">{{ trail[2].name }}</li>
             </ul>
         </div>
-        
+        <br>
         <div v-show="hikeModal" class="modal">
             <div @click="closeModal()" class="close">&times;</div>
             <div class="modal-content">
@@ -36,7 +40,7 @@
                 <img id="picModal" :src="imgModal" alt="">
             </div>
         </div>
-        
+      
         <div v-show="searchQs" id="searchCriteria">
             <p>Activity Type:</p>
             <select v-model="activitySelect">
@@ -71,7 +75,7 @@
             <br>
             <button @click="searchCriteria">Submit</button>
             <p>*required field</p>
-    
+  
         </div>
         <div v-show="disMessage">
         <p id="searchMessage">We are sorry. We could not find exact results for the following criteria:</p>
@@ -105,30 +109,33 @@
                 <img id="pic" src="" alt="">
             </div>
         </div>
-        
+      
         <div v-show="planTrip">
-            <calendar-view :events="events" :show-event-times="eventTimes" @click-date="tryDate"></calendar-view>
+            <calendar-view :events="events" :enable-drag-drop="eventTimes" :starting-day-of-week="stow" @click-date="tryDate" @click-event="gohere" @show-date-change="gohere2" :show-date="showDate"></calendar-view>
             <div v-show="addEvent">
                 <p>If you would like to add your selected trail to your calendar please select the start and end date (optional)</p>
                 <p>To add:</p>
                 <p>{{addHikeObj}}</p>
                 <p>Start Date:</p>
-                <input id="hikeDateStart" v-model="newStartDate" type="date">
+                <input id="hikeDateStart" v-model="newStartDate" type="datetime-local">
                 <p>End Date:</p>
-                <input id="hikeDateEnd" v-model="newEndDate" type="date">
+                <input id="hikeDateEnd" v-model="newEndDate" type="datetime-local">
                 <button @click="addHiketoCalendar">Add Hike to Calendar</button>
+                <button @click="cancelAdd">Cancel</button>
             </div>
             <hr/>
-            <div v-show="addTrip" id="addTrip">
-                <p>Add a Trip to your Calendar!</p>
+                <button @click="expand">Add a Trip to your Calendar!</button>
+                <button @click="hide">^</button>
+                <div v-show="addTrip" id="addTrip">
                 <input placeholder="Trip Name" v-model="newTripName">
                 <p>Trip Start Date</p>
-                <input id="tripDateStart" v-model="newTripStartDate" type="date">
+                <input id="tripDateStart" v-model="newTripStartDate" type="datetime-local">
                 <p>Trip End Date</p>
-                <input id="tripDateEnd" v-model="newTripEndDate" type="date">
+                <input id="tripDateEnd" v-model="newTripEndDate" type="datetime-local">
                 <br>
                 <br>
                 <button @click="addTriptoCalendar">Add Trip to Calendar</button>
+                <button @click="cancelAddTrip">Cancel</button>
                 <p>Click any of the below hikes displayed on the map to view hike info. Double click to add this hike to your calendar. </p>
             
             </div>
@@ -156,7 +163,7 @@
                         :options="c.options"
                         @mouseover="infoText = c.text"
                         @mouseout="infoText = ''"
-                        @dblclick="addTrailEvent(c)"
+                        @dblclick="addTrailEventFromCircle(c)"
                     ></gmap-circle>
                     <div slot="visible">
                         <div style="bottom: 0; left: 0; background-color: blue; color: white; position: absolute; z-index: 100">
@@ -164,6 +171,10 @@
                         </div>
                     </div>
                 </gmap-map>
+            <br>
+            <hr/>
+            <button @click="seeCloseBy">Click to see trails close by to your pins!</button>
+            <button @click="collapseCloseBy">x</button>
             <div v-show="closeByResults">
                 <ul v-for="close in closeBy">
                     <li>
@@ -362,6 +373,8 @@ export default {
         newTripEndDate: '',
         closeBy: [],
         closeByResults: false,
+        stow: 0,
+        showDate: new Date()
     }
   },
     components: {
@@ -373,8 +386,26 @@ export default {
             console.log(this.categ)
             return filters[this.categ](this.allHikes);
         },
+        //showDate(){
+            //return new Date();
+        //}
     },
     methods: {
+        gohere(event){
+            console.log("wenthere")
+            console.log(event)
+        },
+        gohere2(date){
+            console.log("wenthere")
+            console.log(date)
+            this.showDate=date;
+        },
+        expand (){
+            this.addTrip=true;
+        },
+        hide (){
+            this.addTrip=false;
+        },
         createTrip(){
             this.categDisplay=false;
             this.disMessage=false;
@@ -390,14 +421,48 @@ export default {
                             lng: this.allHikes[i][0],
                             lat: this.allHikes[i][1]
                         },
-                        radius: 60000,
+                        radius: 600,
                         text: this.allHikes[i][2].name
                         
                     })
             }
-            this.addTrip=true;
+            //this.addTrip=true;
             
         },
+        seeCloseBy(){
+            this.closeByResults=true;
+            var i;
+            var nearMarkers=[];
+            for (i=0;i<this.markers.length; i++){
+                var j;
+                var mlongmax=Math.abs(this.markers[i].position.lng)+2;
+                var mlongmin=Math.abs(this.markers[i].position.lng)-2;
+                var mlatmax=Math.abs(this.markers[i].position.lat)+2;
+                var mlatmin=Math.abs(this.markers[i].position.lat)-2;
+                console.log(mlongmax+"and"+mlongmin)
+                var markercloses=[];
+                for (j=0; j<this.allHikes.length; j++){
+
+                    var hlong=Math.abs(this.allHikes[j][0]);
+                    console.log(hlong)
+                    var hlat=Math.abs(this.allHikes[j][1]);
+                    if (hlong<mlongmax && hlong>mlongmin && hlat<mlatmax && hlat>mlatmin){
+                            markercloses.push(this.allHikes[j])
+                        }
+                }
+                nearMarkers.push({
+                        pin: this.markers[i],
+                        hike: markercloses
+                });
+                console.log(nearMarkers)
+                }
+                this.closeBy=nearMarkers;
+        },
+        
+        collapseCloseBy(){
+            this.closeByResults=false;
+        },
+        
         addMarker (event) {
             var name=prompt("Please enter a name for your marker:", "Ex. My Start Location")
             console.log(name)
@@ -406,51 +471,34 @@ export default {
                     position: { lat: event.latLng.lat(), lng: event.latLng.lng() },
                     name: name
                 })
-                var i;
-                var nearMarkers=[];
-                for (i=0;i<this.markers.length; i++){
-                    var j;
-                    var mlongmax=Math.abs(this.markers[i].position.lng)+2;
-                    var mlongmin=Math.abs(this.markers[i].position.lng)-2;
-                    var mlatmax=Math.abs(this.markers[i].position.lat)+2;
-                    var mlatmin=Math.abs(this.markers[i].position.lat)-2;
-                    console.log(mlongmax+"and"+mlongmin)
-                    var markercloses=[];
-                    for (j=0; j<this.allHikes.length; j++){
-
-                        var hlong=Math.abs(this.allHikes[j][0]);
-                        console.log(hlong)
-                        var hlat=Math.abs(this.allHikes[j][1]);
-                        if (hlong<mlongmax && hlong>mlongmin && hlat<mlatmax && hlat>mlatmin){
-                            markercloses.push(this.allHikes[j])
-                        }
-                    }
-                    nearMarkers.push({
-                                pin: this.markers[i],
-                                hike: markercloses
-                            });
-                    console.log(nearMarkers)
-                }
-                this.closeBy=nearMarkers;
             }
-            this.closeByResults=true;
         },
         
         tryDate (date){
-            console.log("here")
+            console.log(date)
         },
         
         addTrailEvent(trail){
             this.addEvent=true;
-            console.log(trail);
-            if (trail.text!==null){
-                this.addHikeObj=trail.text;
-                console.log("trail.text"+trail.text)
-            }
-            if (trail[2].name!==null){
-                this.addHikeObj=trail[2].name;
-                console.log("herenow")
-            }
+            this.addHikeObj=trail[2].name;
+        },
+        
+        addTrailEventFromCircle(trail){
+            this.addEvent=true;
+            this.addHikeObj=trail.text; 
+        },
+        
+        cancelAdd(){
+            this.addHikeObj='';
+            this.newStartDate='';
+            this.newEndDate='';
+            this.addEvent=false;
+        },
+        cancelAddTrip(){
+            this.newTripName='';
+            this.newTripStartDate='';
+            this.newTripEndDate='';
+            this.addTrip=false;
         },
         
         addHiketoCalendar() {
@@ -471,6 +519,8 @@ export default {
             console.log("added")
             this.newStartDate='';
             this.newEndDate='';
+            this.addHikeObj='';
+            this.addEvent=false;
         },
         
         addTriptoCalendar(){
@@ -852,5 +902,21 @@ a {
     
     .nameClick:hover{
         cursor: pointer;
+    }
+    .calendar-view {
+        border-style: groove;
+        border-width: thin;
+        border-color: black;
+}
+    button{
+        border-style: solid;
+        border-color: black;
+    }
+    input{
+        border-style: solid;
+        border-color: black;
+    }
+    select{
+        border-radius: 0px;
     }
 </style>
