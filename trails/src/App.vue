@@ -19,6 +19,10 @@
             </button>
         <button @click="createTrip" class="nav">Create a Trip</button>
         <br>
+        <authentication class="nav navbar-nav navbar-right"
+                    :getUser="getUser"
+                    :setUser="setUser">
+                </authentication>
         
         <div v-show="categDisplay" id="display">
             <ul v-for="trail in categoryTrails">
@@ -111,8 +115,9 @@
         </div>
       
         <div v-show="planTrip">
-            <calendar-view :events="events" :enable-drag-drop="eventTimes" :starting-day-of-week="stow" @click-date="tryDate" @click-event="gohere" @show-date-change="gohere2" :show-date="showDate"></calendar-view>
-            <div v-show="addEvent">
+            <calendar-view :events="userEvents" :enable-drag-drop="eventTimes" :starting-day-of-week="stow" @click-date="tryDate" @click-event="gohere" @show-date-change="gohere2" :show-date="showDate"></calendar-view>
+            <div id="empty"></div>
+            <div id="addingEvent" v-show="addEvent">
                 <p>If you would like to add your selected trail to your calendar please select the start and end date (optional)</p>
                 <p>To add:</p>
                 <p>{{addHikeObj}}</p>
@@ -147,7 +152,7 @@
                     style="height: 480px;"
                     >
                     <gmap-marker
-                        v-for="(m, index) in markers"
+                        v-for="(m, index) in userMarkers"
                         :key="index+3"
                         :position="m.position"
                         :clickable="true"
@@ -155,7 +160,7 @@
                         @click="center = m.position"
                     >
                     </gmap-marker>
-                    <gmap-circle
+                    <a href="#addingEvent" v-smooth-scroll><gmap-circle
                         v-for="(c, index) in circles"
                         :key="c.id"
                         :center="c.center"
@@ -163,8 +168,8 @@
                         :options="c.options"
                         @mouseover="infoText = c.text"
                         @mouseout="infoText = ''"
-                        @dblclick="addTrailEventFromCircle(c)"
-                    ></gmap-circle>
+                        @click="addTrailEventFromCircle(c)"
+                    ></gmap-circle></a>
                     <div slot="visible">
                         <div style="bottom: 0; left: 0; background-color: blue; color: white; position: absolute; z-index: 100">
                           {{infoText}}
@@ -183,7 +188,7 @@
                         <p>Trails:</p>
                         <ul v-for="hike in close.hike">
                             <p @click="openModal(hike)">{{hike[2].name}}</p>
-                            <button @click="addTrailEvent(hike)">Add to Calendar</button>
+                            <a href="#empty" v-smooth-scroll><button @click="addTrailEvent(hike)">Add to Calendar</button></a>
                         </ul>
                     </li>
                 </ul>
@@ -200,6 +205,9 @@ import CalendarView from "vue-simple-calendar";
 //import CalendarView from "./components/CalendarView"
 
 require("vue-simple-calendar/dist/static/css/default.css");
+    
+import vueSmoothScroll from 'vue-smooth-scroll';
+//Vue.use(vueSmoothScroll);
     
 import * as d3 from 'd3';
 import MAPDATA from './assets/ca.json';
@@ -374,12 +382,16 @@ export default {
         closeBy: [],
         closeByResults: false,
         stow: 0,
-        showDate: new Date()
+        showDate: new Date(),
+        user: null,
     }
   },
     components: {
         CalendarView,
         Authentication
+    },
+    firebase: {
+        users: usersRef
     },
     computed: {
         categoryTrails(){
@@ -389,8 +401,80 @@ export default {
         //showDate(){
             //return new Date();
         //}
+        userEvents(){
+            if (this.user){
+                var evs=[];
+                var i;
+                for (i=0;i<this.users.length;i++){
+                    console.log(this.user.uid)
+                    console.log(this.users[i].uid)
+                    if (this.users[i].uid===this.user.uid){
+                        //console.log("hereee");
+                        var j;
+                        console.log(this.users[i])
+                        console.log(this.users[i].calendarEvents)
+                        for (var thing in this.users[i].calendarEvents){
+                            //evs.push(this.users[i].calendarEvents[j]);
+                            evs.push(this.users[i].calendarEvents[thing]);
+                        }
+                    }
+                }
+                console.log(evs)
+                return evs;
+            }
+
+        },
+        userMarkers(){
+            if (this.user){
+                var marks=[];
+                var i;
+                for (i=0;i<this.users.length;i++){
+                    console.log(this.user.uid)
+                    console.log(this.users[i].uid)
+                    if (this.users[i].uid===this.user.uid){
+                        //console.log("hereee");
+                        var j;
+                        console.log(this.users[i])
+                        console.log(this.users[i].markers)
+                        for (var thing in this.users[i].markers){
+                            //evs.push(this.users[i].calendarEvents[j]);
+                            marks.push(this.users[i].markers[thing]);
+                        }
+                    }
+                }
+                //console.log(evs)
+                return marks;
+            }
+        }
     },
     methods: {
+        getUser () {
+            return this.user;
+        },
+        setUser (user) {
+            this.user = user;
+            if (user!=null){
+                var attempt=this.user.uid;
+                usersRef.child(attempt).set({
+                    name: this.user.name,
+                    email: this.user.email,
+                    uid: this.user.uid,
+                    isAnonymous: this.user.isAnonymous,
+                    favourites: [""],
+                    calendarEvents: [""],
+                    markers: [""]
+                })
+            }
+            if (user==null){
+                this.categDisplay=true;
+                this.disMessage=false;
+                this.displayResults=false;
+                this.searchQs=false;
+                this.worldMap=false;
+                this.planTrip=false;
+            }
+            
+        },
         gohere(event){
             console.log("wenthere")
             console.log(event)
@@ -407,38 +491,76 @@ export default {
             this.addTrip=false;
         },
         createTrip(){
-            this.categDisplay=false;
-            this.disMessage=false;
-            this.displayResults=false;
-            this.searchQs=false;
-            this.worldMap=false;
-            this.planTrip=true;
-            var i;
-            for (i=0; i<this.allHikes.length;i++){
-                this.circles.push({
-                        id: this.allHikes[i][2].id,
-                        center: {
-                            lng: this.allHikes[i][0],
-                            lat: this.allHikes[i][1]
-                        },
-                        radius: 600,
-                        text: this.allHikes[i][2].name
-                        
-                    })
-            }
+            //console.log(this.users(.key))
+/*            var attempt=this.user.uid;
+            //console.log(usersRef.child(attempt).child("calendarEvents"))
+            //console.log(this.users[0])
+            console.log(attempt)
+            usersRef.child(attempt).set({
+                name: this.user.name,
+                email: this.user.email,
+                uid: this.user.uid,
+                isAnonymous: "",
+                favourites: [],
+                calendarEvents: [{
+                    startDate: "2018-04-19",
+                    endDate: "2018-04-22",
+                    title: "My Trip To California"
+                }],
+                markers: [{
+                    position: { lat: 35.99, lng: -78.89 }, // Durham, NC
+                    name: "durr"
+                }]
+            })
+            console.log(usersRef.child(attempt).child("calendarEvents").value)*/
+            //console.log(this.user)
+            //var toadd=usersRef.child[this.user.key];
+            //console.log(toadd);
+            if (this.user){
+                this.categDisplay=false;
+                this.disMessage=false;
+                this.displayResults=false;
+                this.searchQs=false;
+                this.worldMap=false;
+                this.planTrip=true;
+                var i;
+                for (i=0; i<this.allHikes.length;i++){
+                    this.circles.push({
+                            id: this.allHikes[i][2].id,
+                            center: {
+                                lng: this.allHikes[i][0],
+                                lat: this.allHikes[i][1]
+                            },
+                            radius: 60000,
+                            text: this.allHikes[i][2].name,
+                            options: {
+                                strokeColor: "red",
+                                strokeOpacity: 0.8,
+                                strokeWeight: 0.5,
+                                fillColor: "orange",
+                                fillOpacity: 0.3
+                            }
+
+                        })
+                }
             //this.addTrip=true;
+            }
+            else{
+                alert("Sorry, you need to be logged in to create a Trip")
+            }
             
         },
         seeCloseBy(){
             this.closeByResults=true;
             var i;
             var nearMarkers=[];
-            for (i=0;i<this.markers.length; i++){
+            console.log(this.userMarkers[0].position.lat)
+            for (i=0; i<this.userMarkers.length;i++){
                 var j;
-                var mlongmax=Math.abs(this.markers[i].position.lng)+2;
-                var mlongmin=Math.abs(this.markers[i].position.lng)-2;
-                var mlatmax=Math.abs(this.markers[i].position.lat)+2;
-                var mlatmin=Math.abs(this.markers[i].position.lat)-2;
+                var mlongmax=Math.abs(this.userMarkers[i].position.lng)+2;
+                var mlongmin=Math.abs(this.userMarkers[i].position.lng)-2;
+                var mlatmax=Math.abs(this.userMarkers[i].position.lat)+2;
+                var mlatmin=Math.abs(this.userMarkers[i].position.lat)-2;
                 console.log(mlongmax+"and"+mlongmin)
                 var markercloses=[];
                 for (j=0; j<this.allHikes.length; j++){
@@ -451,7 +573,7 @@ export default {
                         }
                 }
                 nearMarkers.push({
-                        pin: this.markers[i],
+                        pin: this.userMarkers[i],
                         hike: markercloses
                 });
                 console.log(nearMarkers)
@@ -464,10 +586,11 @@ export default {
         },
         
         addMarker (event) {
+            var toadd=usersRef.child(this.user.uid).child("markers");
             var name=prompt("Please enter a name for your marker:", "Ex. My Start Location")
             console.log(name)
             if (name!=null){
-                this.markers.push({
+                toadd.push({
                     position: { lat: event.latLng.lat(), lng: event.latLng.lng() },
                     name: name
                 })
@@ -503,15 +626,17 @@ export default {
         
         addHiketoCalendar() {
             //document.getElementById()
+            var toadd=usersRef.child(this.user.uid).child("calendarEvents");
+            console.log(toadd);
             if (this.newEndDate!==''){
-                this.events.push({
+                toadd.push({
                     title: this.addHikeObj,
                     startDate: this.newStartDate,
                     endDate: this.newEndDate,
                 })
             }
             else {
-                this.events.push({
+                toadd.push({
                     title: this.addHikeObj,
                     startDate: this.newStartDate,
                 })
@@ -524,7 +649,14 @@ export default {
         },
         
         addTriptoCalendar(){
+            var toadd=usersRef.child(this.user.uid).child("calendarEvents");
+            console.log(toadd);
             console.log("addtrip")
+            toadd.push({
+                title: this.newTripName,
+                startDate: this.newTripStartDate,
+                endDate: this.newTripEndDate
+            })
             this.events.push({
                 title: this.newTripName,
                 startDate: this.newTripStartDate,
@@ -589,6 +721,7 @@ export default {
         },
         
         showCategory(){
+            console.log(this.users)
             this.categDisplay=true;
             this.disMessage=false;
             this.displayResults=false;
@@ -918,5 +1051,21 @@ a {
     }
     select{
         border-radius: 0px;
+    }
+    .day{
+        
+    }
+    .event{
+        z-index: 1000;
+    }
+    div .event .offset2{
+        z-index: 200;
+    }
+    .calendar-view .day{
+
+    }
+    .calendar-view .weeks{
+        height: 30em;
+        overflow: scroll;
     }
 </style>

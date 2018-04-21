@@ -49,12 +49,14 @@ DUVALL:
 
 TODO:
 STYLE LITERALLY EVERYTHING
-fix select button to say View categories
+
+*fix select button to say View categories
 display lists of hikes pretty
 close by trails update right away
-calendar two events at same day
-circles on google map better
+*calendar two events at same day
+*circles on google map better
 administrator?
+weird key error for map
 
 SIGN IN STUFF:
 login to:
@@ -63,15 +65,15 @@ login to:
     create a trip
 
 DATABASE:
--user authentication
-    email 
-    password
-    calendar events
+*user authentication
+   * email 
+    *password
+   * calendar events
 
 CALENDAR:
--click on event to edit
+-click on event to see details and edit
 -click on day to add event
--add hike scrolls you up?? or opens as modal
+*add hike scrolls you up?? or opens as modal
 -drag and drop?
 
 extras:

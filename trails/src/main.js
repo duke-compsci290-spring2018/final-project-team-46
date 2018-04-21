@@ -7,6 +7,7 @@ import Firebase from 'firebase'
 import * as VueGoogleMaps from 'vue2-google-maps';
 import { TRAIL_KEY } from './secrets.js';
 import { MAP_KEY } from './secrets';
+import vueSmoothScroll from 'vue-smooth-scroll';
 
 Vue.use(VueGoogleMaps, {
     load: {
@@ -14,6 +15,7 @@ Vue.use(VueGoogleMaps, {
     }
 })
 Vue.use(VueFire)
+Vue.use(vueSmoothScroll)
 
 new Vue({
   el: '#app',

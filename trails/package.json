@@ -19,6 +19,7 @@
     "vue": "^2.5.16",
     "vue-d3": "^0.1.0",
     "vue-simple-calendar": "^2.2.0",
+    "vue-smooth-scroll": "^1.0.13",
     "vue2-google-maps": "^0.9.2",
     "vuefire": "^1.4.5"
   },
