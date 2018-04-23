@@ -79,6 +79,7 @@ export default {
         Firebase.auth().onAuthStateChanged(authState => {
             if (authState) {
                 this.signIn(authState)
+                console.log(authState)
             }
         })
     }

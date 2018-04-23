@@ -25,15 +25,25 @@
                 </authentication>
         
         <div v-show="categDisplay" id="display">
+            <button @click="displayFavourites" v-show="signedIn">See Favourites</button>
+            <button @click="defaultCategory">Make Default</button>
             <ul v-for="trail in categoryTrails">
                 <li :id="trail[2].id" class="nameClick" @click="openModal(trail)">{{ trail[2].name }}</li>
             </ul>
         </div>
         <br>
+        <div v-show="displayFaves">
+            <p v-show="nofaves">You do not have any current favourite trails</p>
+            <ul v-for="trail in userFavourites">
+                <button @click="removeFave(trail)">Remove From Favourites</button>
+                <li :id="trail[2].id" class="nameClick" @click="openModal(trail)">{{ trail[2].name }}</li>
+            </ul>
+        </div>
         <div v-show="hikeModal" class="modal">
             <div @click="closeModal()" class="close">&times;</div>
             <div class="modal-content">
                 <h4 id="infoModal">{{infoModal}}</h4>
+                <button @click="addToFaves" v-show="signedIn && normmodalOpen">Add to Favourites</button>
                 <p id="locationModal">{{locationModal}}</p>
                 <p id="activityModal">{{activityModal}}</p>
                 <p id="lengthModal">{{lengthModal}}</p>
@@ -115,7 +125,7 @@
         </div>
       
         <div v-show="planTrip">
-            <calendar-view :events="userEvents" :enable-drag-drop="eventTimes" :starting-day-of-week="stow" @click-date="tryDate" @click-event="gohere" @show-date-change="gohere2" :show-date="showDate"></calendar-view>
+            <calendar-view :events="userEvents" :enable-drag-drop="eventTimes" :starting-day-of-week="stow" @click-date="dateClick" @click-event="eventClick" @show-date-change="dateChange" :show-date="showDate"></calendar-view>
             <div id="empty"></div>
             <div id="addingEvent" v-show="addEvent">
                 <p>If you would like to add your selected trail to your calendar please select the start and end date (optional)</p>
@@ -213,7 +223,7 @@ import * as d3 from 'd3';
 import MAPDATA from './assets/ca.json';
 var VueD3 = require('vue-d3')
 
-import { usersRef, storageRef } from './database.js'
+import { usersRef, storageRef, tripRef, db } from './database.js'
 import Authentication from './components/Authentication'
     
 //Vue.use(VueD3)
@@ -384,6 +394,12 @@ export default {
         stow: 0,
         showDate: new Date(),
         user: null,
+        signedIn: '',
+        trailModal: {},
+        displayFaves: false,
+        FaveTrails: [],
+        normmodalOpen: true,
+        nofaves: false,
     }
   },
     components: {
@@ -391,35 +407,34 @@ export default {
         Authentication
     },
     firebase: {
-        users: usersRef
+        users: usersRef,
+        trip: tripRef
     },
     computed: {
         categoryTrails(){
             console.log(this.categ)
             return filters[this.categ](this.allHikes);
         },
-        //showDate(){
-            //return new Date();
-        //}
+
         userEvents(){
             if (this.user){
                 var evs=[];
                 var i;
                 for (i=0;i<this.users.length;i++){
-                    console.log(this.user.uid)
-                    console.log(this.users[i].uid)
+                    //console.log(this.user.uid)
+                    //console.log(this.users[i].uid)
                     if (this.users[i].uid===this.user.uid){
                         //console.log("hereee");
                         var j;
-                        console.log(this.users[i])
-                        console.log(this.users[i].calendarEvents)
+                        //console.log(this.users[i])
+                        //console.log(this.users[i].calendarEvents)
                         for (var thing in this.users[i].calendarEvents){
                             //evs.push(this.users[i].calendarEvents[j]);
                             evs.push(this.users[i].calendarEvents[thing]);
                         }
                     }
                 }
-                console.log(evs)
+                //console.log(evs)
                 return evs;
             }
 
@@ -429,13 +444,13 @@ export default {
                 var marks=[];
                 var i;
                 for (i=0;i<this.users.length;i++){
-                    console.log(this.user.uid)
-                    console.log(this.users[i].uid)
+                    //console.log(this.user.uid)
+                    //console.log(this.users[i].uid)
                     if (this.users[i].uid===this.user.uid){
                         //console.log("hereee");
                         var j;
-                        console.log(this.users[i])
-                        console.log(this.users[i].markers)
+                        //console.log(this.users[i])
+                        //console.log(this.users[i].markers)
                         for (var thing in this.users[i].markers){
                             //evs.push(this.users[i].calendarEvents[j]);
                             marks.push(this.users[i].markers[thing]);
@@ -445,6 +460,34 @@ export default {
                 //console.log(evs)
                 return marks;
             }
+        },
+        
+        userFavourites(){
+            //console.log("ere")
+            if (this.user){
+                var faves=[];
+                var i;
+                for (i=0;i<this.users.length;i++){
+                    //console.log(this.user.uid)
+                    //console.log(this.users[i].uid)
+                    if (this.users[i].uid===this.user.uid){
+                        //console.log("hereee");
+                        var j;
+                        //console.log("ere2")
+                        //console.log(this.users[i])
+                        //console.log(this.users[i].markers)
+                        for (var thing in this.users[i].favourites){
+                            //evs.push(this.users[i].calendarEvents[j]);
+                            if (this.users[i].favourites[thing]!=""){
+                                //console.log("ere3")
+                                faves.push(this.users[i].favourites[thing]);
+                            }
+                        }
+                    }
+                }
+                //console.log(evs)
+                return faves;
+            }
         }
     },
     methods: {
@@ -452,34 +495,95 @@ export default {
             return this.user;
         },
         setUser (user) {
-            this.user = user;
-            if (user!=null){
-                var attempt=this.user.uid;
-                usersRef.child(attempt).set({
-                    name: this.user.name,
-                    email: this.user.email,
-                    uid: this.user.uid,
-                    isAnonymous: this.user.isAnonymous,
-                    favourites: [""],
-                    calendarEvents: [""],
-                    markers: [""]
-                })
+             //logging out
+            if (user===null){
+                this.user = user;
+                return this.signedOut();
             }
-            if (user==null){
-                this.categDisplay=true;
-                this.disMessage=false;
-                this.displayResults=false;
-                this.searchQs=false;
-                this.worldMap=false;
-                this.planTrip=false;
+            
+            if (user!=null){
+                console.log(user)
+                var found=false;
+                this.signedIn=true;
+                var id=user.uid;
+                //looking for existing account
+                var i;
+                console.log(this.users);
+                console.log(this.users.length)
+                //console.log(usersRef.child["Owvyee1h6eN7jtlpm9kVdQOH16w1"].child("uid"))
+                console.log(usersRef.child["Owvyee1h6eN7jtlpm9kVdQOH16w1"])
+                var str="users/Owvyee1h6eN7jtlpm9kVdQOH16w1"
+                console.log(db.ref("hello"))
+                if (usersRef.child[id]){
+                    found=true;
+                    console.log("no need")
+                    return;
+                }
+                //for (var i=0; i<this.users.length;i++){
+                    //console.log(this.users[i]['.key'])
+                    //if (this.users[i]['.key']===id){
+//                        this.categ=this.users[i].defaultCategory;
+//                        console.log(this.categ)
+//                        found=true;
+//                        console.log("no need")
+//                        return;
+//                    }
+//                }
+                console.log(found)
+                //new account created
+                if (found===false){
+                    this.user = user;
+                    return this.createAccount();
+                }
             }
             
         },
-        gohere(event){
+        createAccount(){
+            var attempt=this.user.uid;
+            usersRef.child(attempt).set({
+                name: this.user.name,
+                email: this.user.email,
+                uid: this.user.uid,
+                isAnonymous: this.user.isAnonymous,
+                favourites: [""],
+                calendarEvents: [""],
+                markers: [""],
+                defaultCategory: "All"
+            })
+            console.log("logged new")
+        },
+        
+        signedOut(){
+            this.signedIn=false;
+            this.categDisplay=true;
+            this.disMessage=false;
+            this.displayResults=false;
+            this.searchQs=false;
+            this.worldMap=false;
+            this.planTrip=false;         
+        },
+        
+        eventClick(event){
             console.log("wenthere")
             console.log(event)
         },
-        gohere2(date){
+        dateClick (date){
+            console.log(date)
+            var da=date.toISOString();
+            console.log(da)
+            var check=prompt("If you would you like to add an event the following day: "+date+", Please add a name for the event:")
+            if (check!=null){
+                console.log("here")
+                console.log(date)
+                var toadd=usersRef.child(this.user.uid).child("calendarEvents");
+                toadd.push({
+                    title: check,
+                    startDate: da
+                })
+            }
+        },
+        
+        dateChange(date){
             console.log("wenthere")
             console.log(date)
             this.showDate=date;
@@ -491,31 +595,6 @@ export default {
             this.addTrip=false;
         },
         createTrip(){
-            //console.log(this.users(.key))
-/*            var attempt=this.user.uid;
-            //console.log(usersRef.child(attempt).child("calendarEvents"))
-            //console.log(this.users[0])
-            console.log(attempt)
-            usersRef.child(attempt).set({
-                name: this.user.name,
-                email: this.user.email,
-                uid: this.user.uid,
-                isAnonymous: "",
-                favourites: [],
-                calendarEvents: [{
-                    startDate: "2018-04-19",
-                    endDate: "2018-04-22",
-                    title: "My Trip To California"
-                }],
-                markers: [{
-                    position: { lat: 35.99, lng: -78.89 }, // Durham, NC
-                    name: "durr"
-                }]
-            })
-            console.log(usersRef.child(attempt).child("calendarEvents").value)*/
-            //console.log(this.user)
-            //var toadd=usersRef.child[this.user.key];
-            //console.log(toadd);
             if (this.user){
                 this.categDisplay=false;
                 this.disMessage=false;
@@ -523,6 +602,8 @@ export default {
                 this.searchQs=false;
                 this.worldMap=false;
                 this.planTrip=true;
+                this.displayFaves=false;
+                this.normmodalOpen=true;
                 var i;
                 for (i=0; i<this.allHikes.length;i++){
                     this.circles.push({
@@ -552,33 +633,6 @@ export default {
         },
         seeCloseBy(){
             this.closeByResults=true;
-            var i;
-            var nearMarkers=[];
-            console.log(this.userMarkers[0].position.lat)
-            for (i=0; i<this.userMarkers.length;i++){
-                var j;
-                var mlongmax=Math.abs(this.userMarkers[i].position.lng)+2;
-                var mlongmin=Math.abs(this.userMarkers[i].position.lng)-2;
-                var mlatmax=Math.abs(this.userMarkers[i].position.lat)+2;
-                var mlatmin=Math.abs(this.userMarkers[i].position.lat)-2;
-                console.log(mlongmax+"and"+mlongmin)
-                var markercloses=[];
-                for (j=0; j<this.allHikes.length; j++){
-
-                    var hlong=Math.abs(this.allHikes[j][0]);
-                    console.log(hlong)
-                    var hlat=Math.abs(this.allHikes[j][1]);
-                    if (hlong<mlongmax && hlong>mlongmin && hlat<mlatmax && hlat>mlatmin){
-                            markercloses.push(this.allHikes[j])
-                        }
-                }
-                nearMarkers.push({
-                        pin: this.userMarkers[i],
-                        hike: markercloses
-                });
-                console.log(nearMarkers)
-                }
-                this.closeBy=nearMarkers;
         },
         
         collapseCloseBy(){
@@ -594,11 +648,37 @@ export default {
                     position: { lat: event.latLng.lat(), lng: event.latLng.lng() },
                     name: name
                 })
-            }
-        },
-        
-        tryDate (date){
-            console.log(date)
+                var i;
+                var nearMarkers=[];
+            //console.log(this.userMarkers[0].position.lat)
+                for (i=0; i<this.userMarkers.length;i++){
+                    if (this.userMarkers[i]!=""){
+                        var j;
+                        var mlongmax=Math.abs(this.userMarkers[i].position.lng)+2;
+                        var mlongmin=Math.abs(this.userMarkers[i].position.lng)-2;
+                        var mlatmax=Math.abs(this.userMarkers[i].position.lat)+2;
+                        var mlatmin=Math.abs(this.userMarkers[i].position.lat)-2;
+                        console.log(mlongmax+"and"+mlongmin)
+                        var markercloses=[];
+                        for (j=0; j<this.allHikes.length; j++){
+
+                            var hlong=Math.abs(this.allHikes[j][0]);
+                            console.log(hlong)
+                            var hlat=Math.abs(this.allHikes[j][1]);
+                            if (hlong<mlongmax && hlong>mlongmin && hlat<mlatmax && hlat>mlatmin){
+                                    markercloses.push(this.allHikes[j])
+                                }
+                        }
+                        nearMarkers.push({
+                                pin: this.userMarkers[i],
+                                hike: markercloses
+                        });
+                        console.log(nearMarkers)
+                        }
+                    }
+                    this.closeBy=nearMarkers;
+                }
+            
         },
         
         addTrailEvent(trail){
@@ -652,6 +732,7 @@ export default {
             var toadd=usersRef.child(this.user.uid).child("calendarEvents");
             console.log(toadd);
             console.log("addtrip")
+            console.log(this.newTripStartDate)
             toadd.push({
                 title: this.newTripName,
                 startDate: this.newTripStartDate,
@@ -677,6 +758,8 @@ export default {
             this.searchQs=false;
             this.planTrip=false;
             this.worldMap=true;
+            this.displayFaves=false;
+            this.normmodalOpen=true;
             
             var svg = d3.select("svg");
             var projection = d3.geoMercator()
@@ -728,19 +811,8 @@ export default {
             this.searchQs=false;
             this.worldMap=false;
             this.planTrip=false;
-            
-/*            var i;
-            for (i=0;i<this.allHikes.length;i++){
-                var j;
-                for (j=0; j<this.allHikes.length;j++){
-                    if (j!=i){
-                        if (this.allHikes[i][2].id===this.allHikes[j][2].id){
-                            console.log(this.allHikes[i][2].id)
-                        }
-                    }
-                }
-            }*/
-            
+            this.displayFaves=false;
+            this.normmodalOpen=true;
         },
         
         closeModal(){
@@ -756,6 +828,54 @@ export default {
             this.descriptionModal=trail[2].description;
             this.lengthModal=trail[2].length;
             this.imgModal=trail[2].pic;
+            this.trailModal=trail;
+            
+            if (this.user){
+                this.signedIn=true;
+            }
+        },
+        
+        addToFaves(){
+            var toadd=usersRef.child(this.user.uid).child("favourites");
+            toadd.push(this.trailModal);
+            alert("Added to Favourites!")
+            
+        },
+        removeFave(trail){
+            //remove trail
+        },
+        
+        displayFavourites(){
+            console.log("here")
+            this.categDisplay=false;
+            this.displayFaves=true;
+            this.normmodalOpen=false;
+            /*var faves=[];
+            var i;
+            for (i=0;i<this.users.length;i++){
+                if (this.users[i].uid===this.user.uid){
+                    console.log(this.users[i].favourites);
+                    for (var thing in this.users[i].favourites){
+                        faves.push(this.users[i].favourites.thing);
+                    }
+                }
+            }
+            this.FaveTrails=faves;*/
+            if (this.userFavourites.length===0){
+                console.log("here")
+                this.nofaves=true;
+            }
+            else{
+                this.nofaves=false;
+            }
+            
+        },
+        
+        defaultCategory(){
+            console.log(this.categ)
+            var setit=this.categ;
+            var id=this.user.uid;
+            usersRef.child("users").child(id).child("defaultCategory").set(setit);
         },
         
         search(){
@@ -763,6 +883,8 @@ export default {
             this.searchQs=true;
             this.worldMap=false;
             this.planTrip=false;
+            this.displayFaves=false;
+            this.normmodalOpen=true;
         },
         
         searchCriteria(){

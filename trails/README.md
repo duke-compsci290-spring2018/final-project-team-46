@@ -49,10 +49,14 @@ DUVALL:
 
 TODO:
 STYLE LITERALLY EVERYTHING
+-be able to remove trails
+-work on default category/background colour
+-work on user sign in troubles
+-click on event to see details and edit them
 
 *fix select button to say View categories
 display lists of hikes pretty
-close by trails update right away
+*close by trails update right away
 *calendar two events at same day
 *circles on google map better
 administrator?
@@ -60,9 +64,10 @@ weird key error for map
 
 SIGN IN STUFF:
 login to:
-    have favourite trails
-    have favrouite category
-    create a trip
+    *have favourite trails
+    have default category
+    *create a trip
+    *view favourite trails
 
 DATABASE:
 *user authentication
@@ -72,7 +77,7 @@ DATABASE:
 
 CALENDAR:
 -click on event to see details and edit
--click on day to add event
+*click on day to add event
 *add hike scrolls you up?? or opens as modal
 -drag and drop?
 

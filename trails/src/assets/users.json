@@ -17,7 +17,8 @@
                             "position": { "lat": 35.99, "lng": -78.89 },
                             "name": "durr"
                         }
-                    ]
+                    ],
+                    "defaultCategory": "All"
             
         }]
     }

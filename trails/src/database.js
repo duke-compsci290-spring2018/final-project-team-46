@@ -16,3 +16,4 @@ export const db = fireApp.database()
 export const storageRef = fireApp.storage().ref()
 
 export const usersRef = db.ref('users')
+export const tripRef = db.ref('hikeadvisor')
