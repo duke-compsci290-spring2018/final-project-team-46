@@ -280,7 +280,7 @@
             <hr/>
             <h3>Hover over any of the below hikes displayed on the map to view hike name. Click to add this hike to your calendar. Drop pins in areas where you want to see what is close by!</h3>
             <hr/>
-            <div v-show="markerModal" class="modal">
+            <div id="markerModal" class="modal">
                 <div @click="closeMarkerModal()" class="close">&times;</div>
                 <div class="modal-content">
                     <p>{{clickedMarkerName}}</p>
@@ -356,17 +356,16 @@ import CalendarView from "vue-simple-calendar";
 require("vue-simple-calendar/dist/static/css/default.css");
     
 import vueSmoothScroll from 'vue-smooth-scroll';
-//Vue.use(vueSmoothScroll);
     
 import * as d3 from 'd3';
 import MAPDATA from './assets/ca.json';
-var VueD3 = require('vue-d3')
+var VueD3 = require('vue-d3');
 
 import { usersRef, storageRef, tripRef, db, userActRef, searchActRef } from './database.js';
-import Authentication from './components/Authentication'
+import Authentication from './components/Authentication';
     
 import {TRAIL_KEY} from './secrets.js';
-//Vue.use(VueD3)
+
 var myHeaders = new Headers();
 myHeaders.append("X-Mashape-Key", TRAIL_KEY);
 
@@ -380,7 +379,6 @@ var myRequest = new Request('https://trailapi-trailapi.p.mashape.com/', myInit);
 var allHikes=[];
 var circleS=[];
 fetch(myRequest).then(data=>data.json()).then(data=>{
-    console.log(data)
     var i;
     for (i=0; i< data.places.length; i++){
         if (data.places[i].activities.length!==0){
@@ -395,7 +393,7 @@ fetch(myRequest).then(data=>data.json()).then(data=>{
                 "url": data.places[i].activities[0].url,
                 "pic": data.places[i].activities[0].thumbnail,
                 "id": data.places[i].unique_id
-            }
+            };
             var pt=[data.places[i].lon, data.places[i].lat, info];
             allHikes.push(pt);
         }
@@ -411,7 +409,7 @@ fetch(myRequest).then(data=>data.json()).then(data=>{
                 "url": "no url",
                 "pic": "no display picture",
                 "id": data.places[i].unique_id
-            }
+            };
             var pt=[data.places[i].lon, data.places[i].lat, info];
             allHikes.push(pt);
         }
@@ -430,15 +428,14 @@ fetch(myRequest).then(data=>data.json()).then(data=>{
                 fillColor: "orange",
                 fillOpacity: 0.3
             }
-        })
+        });
     }
-})
+});
     
 var filters= {
     Long: function (hikes) {
         var categhikes=[];
         var i;
-        //console.log(hikes.length)
         for (i=0; i<hikes.length; i++){
             if (hikes[i][2].length!=="no length recorded"){
                 if (hikes[i][2].length>12){
@@ -446,7 +443,6 @@ var filters= {
                 }
             }
         }
-        //console.log(categhikes)
         return categhikes;
     },
     Medium: function (hikes) {
@@ -592,20 +588,12 @@ export default {
                 var evs=[];
                 var i;
                 for (i=0;i<this.users.length;i++){
-                    //console.log(this.user.uid)
-                    //console.log(this.users[i].uid)
                     if (this.users[i].uid===this.user.uid){
-                        //console.log("hereee");
-                        var j;
-                        //console.log(this.users[i])
-                        //console.log(this.users[i].calendarEvents)
                         for (var thing in this.users[i].calendarEvents){
-                            //evs.push(this.users[i].calendarEvents[j]);
                             evs.push(this.users[i].calendarEvents[thing]);
                         }
                     }
                 }
-                //console.log(evs)
                 return evs;
             }
 
@@ -615,48 +603,30 @@ export default {
                 var marks=[];
                 var i;
                 for (i=0;i<this.users.length;i++){
-                    //console.log(this.user.uid)
-                    //console.log(this.users[i].uid)
                     if (this.users[i].uid===this.user.uid){
-                        //console.log("hereee");
-                        var j;
-                        //console.log(this.users[i])
-                        //console.log(this.users[i].markers)
                         for (var thing in this.users[i].markers){
-                            //evs.push(this.users[i].calendarEvents[j]);
                             marks.push(this.users[i].markers[thing]);
                         }
                     }
                 }
-                //console.log(evs)
                 return marks;
             }
         },
         
         userFavourites(){
-            //console.log("ere")
             if (this.user){
                 var faves=[];
                 var i;
                 for (i=0;i<this.users.length;i++){
-                    //console.log(this.user.uid)
-                    //console.log(this.users[i].uid)
                     if (this.users[i].uid===this.user.uid){
-                        //console.log("hereee");
                         var j;
-                        //console.log("ere2")
-                        //console.log(this.users[i])
-                        //console.log(this.users[i].markers)
                         for (var thing in this.users[i].favourites){
-                            //evs.push(this.users[i].calendarEvents[j]);
                             if (this.users[i].favourites[thing]!=""){
-                                //console.log("ere3")
                                 faves.push(this.users[i].favourites[thing]);
                             }
                         }
                     }
                 }
-                //console.log(evs)
                 return faves;
             }
         }
@@ -673,14 +643,10 @@ export default {
             }
             
             if (user!=null){
-                console.log(user)
                 var found=false;
                 this.signedIn=true;
                 var id=user.uid;
                 //looking for existing account
-                var i;
-                console.log(this.users);
-                console.log(this.users[0]);
                 var category;
                 var colour;
                 var admin;
@@ -688,16 +654,12 @@ export default {
                     console.log(user);
                     if (user.uid===id){
                         found=true;
-                        console.log("no need to add")
-                        console.log(user.defaultCategory)
-                        console.log(user.defaultCategory)
+                        console.log("no need to add");
                         category=user.defaultCategory;
                         colour=user.backColour;
                         admin=user.admin;
-                        console.log("hellooooo")
                     }
                 });
-                console.log(found)
                 if (found===true){
                     this.categ=category;
                     if (colour!="default"){
@@ -736,14 +698,11 @@ export default {
                 snapshot.forEach(function(user){
                     var categ2;
                     var key2=user.key;
-                    //console.log(key2)
                     if (key2===id){
                         user.forEach(function(thing){
                             var categ3;
                             var keyy=thing.key;
                             var val =thing.val();
-                            //console.log(keyy);
-                            //console.log(val);
                             if (keyy==="backColour"){
                                 console.log("backcolour is "+val)
                                 var colour=val;
@@ -751,23 +710,18 @@ export default {
                                     document.body.style.backgroundColor = colour;
                                 }
                             }
-                            if(keyy==="defaultCategory"){
-                                //this.categ=val;
-                            }
                         })
                     }
                 })
             })
             //wow this is faster LOL
             usersRef.child(id).child("defaultCategory").once("value").then((snapshot)=>{
-                console.log(this.categ)
-                console.log(snapshot.val())
+                console.log(snapshot.val());
                 this.categ=snapshot.val();
             })
             
             usersRef.child(id).child("admin").once("value").then((snapshot)=>{
-                console.log(this.categ)
-                console.log(snapshot.val())
+                console.log(snapshot.val());
                 var admin=snapshot.val();
                 if (admin===true){
                     this.admin=true;
@@ -790,13 +744,13 @@ export default {
                 defaultCategory: "All",
                 backColour: "default",
                 admin: "false"
-            })
-            console.log("logged new")
+            });
+            console.log("logged new");
             
             var date=new Date();
             var str=this.user.name+"("+this.user.email+") created an account on "+date;
             
-            db.ref("userActivity").child("activities").push(str)
+            db.ref("userActivity").child("activities").push(str);
         },
         
         signedOut(){
@@ -816,7 +770,6 @@ export default {
         },
         
         showActivity(){
-            //this.searchAct=true;
             this.activityUS=true;
             this.categDisplay=false;
             this.searchQs=false;
@@ -826,15 +779,12 @@ export default {
             this.normmodalOpen=true;
             this.displayResults=false;
             this.userStuff=false;
-            
-            console.log(this.searchActivities)
-            console.log(this.users)
+
             db.ref("searchActivity").child("sactivities").once("value").then((snapshot)=>{
-                console.log(snapshot.val())
+                console.log(snapshot.val());
                 this.searchActivities=snapshot.val();
             })
-            
-            //this.userAct=true;
+
             db.ref("userActivity").child("activities").once("value").then((snapshot)=>{
                 this.userActivity=snapshot.val();
             })
@@ -842,8 +792,6 @@ export default {
         showUsers(){
             this.userStuff=true;
             this.activityUS=false;
-            //this.searchAct=false;
-            //this.userAct=false;
             this.categDisplay=false;
             this.searchQs=false;
             this.worldMap=false;
@@ -860,7 +808,6 @@ export default {
         },
         
         openThemeOptions(){
-            //this.themeModal=true;
             document.getElementById("themeM").style.display="block";
             
         },
@@ -871,7 +818,7 @@ export default {
         },
         
         chooseTheme(){
-            console.log(this.colourChoice)
+            console.log(this.colourChoice);
             var setit=this.colourChoice;
             var id=this.user.uid;
             if (setit!=""){
@@ -892,12 +839,9 @@ export default {
         },
         
         eventClick(event){
-            console.log("wenthere")
-            console.log(event)
-            console.log(event.startDate)
             console.log(event.startDate.toISOString());
             this.eventClickStart=event.startDate.toISOString().substring(0,10);
-            console.log(this.eventClickStart)
+            console.log(this.eventClickStart);
             this.eventClickEnd=event.endDate.toISOString().substring(0,10);
             this.eventClickTitle=event.title;
             //this.eventClickModal=true;
@@ -913,19 +857,13 @@ export default {
             this.eventEdits=true;
         },
         submitTitleEdit(){
-            //usersRef.child(this.user.uid).child("calendarEvents")
-            //key of event?
-            //this.eventEdits=false;
-            console.log(this.newEventTitle)
-            console.log(this.newEventStart)
-            console.log(this.newEventEnd)
             var title;
             if (this.newEventTitle!=""){
                 title=this.newEventTitle;
                 var name=this.eventClickTitle;
                 var start=this.eventClickStart;
                 var end=this.eventClickEnd;
-                console.log(start)
+                console.log(start);
 
                 var id=this.user.uid;
                 usersRef.once("value").then(function(snapshot){
@@ -933,26 +871,15 @@ export default {
                     var childKey = snapshot.child().key;
                     snapshot.forEach(function(user){
                         var key2=user.key;
-                        console.log(key2)
                         if (key2===id){
                             user.forEach(function(thing){
                                 var keyy=thing.key;
                                 var val =thing.val();
-                                console.log(keyy);
-                                console.log(val);
                                 if (keyy==="calendarEvents"){
                                     thing.forEach(function(f){
-                                        console.log(f.key);
                                         var key3=f.key;
                                         var val=f.val();
-                                        console.log(f.val());
-                                        if (name===val.title&&start===val.startDate){
-                                            console.log("try to delate")
-                                            var str="users"+key2+"/calendarEvents/"+key3
-                                            console.log(str)
-                                            //usersRef(str).remove()
-                                            usersRef.child(key2).child(keyy).child(key3).child("title").set(title);
-                                            //db.ref(str).remove();
+                                        if (name===val.title&&start===val.startDate){ usersRef.child(key2).child(keyy).child(key3).child("title").set(title);
                                         }
                                     })
                                 }
@@ -964,18 +891,16 @@ export default {
             else {
                 alert("Please submit a change");
             }
-            //alert("if you're finished making edits to this event, press done to see changes")
             this.eventClickTitle=this.newEventTitle;
             this.newEventTitle='';
         },
         submitStartEdit(){
             if (this.newEventStart!=""){
                 var newstart=this.newEventStart;
-                console.log(newstart)
+                console.log(newstart);
                 var name=this.eventClickTitle;
                 var start=this.eventClickStart;
                 var end=this.eventClickEnd;
-                console.log(start)
 
                 var id=this.user.uid;
                 usersRef.once("value").then(function(snapshot){
@@ -983,26 +908,15 @@ export default {
                     var childKey = snapshot.child().key;
                     snapshot.forEach(function(user){
                         var key2=user.key;
-                        console.log(key2)
                         if (key2===id){
                             user.forEach(function(thing){
                                 var keyy=thing.key;
                                 var val =thing.val();
-                                console.log(keyy);
-                                console.log(val);
                                 if (keyy==="calendarEvents"){
                                     thing.forEach(function(f){
-                                        console.log(f.key);
                                         var key3=f.key;
                                         var val=f.val();
-                                        console.log(f.val());
-                                        if (name===val.title&&start===val.startDate){
-                                            console.log("try to delate")
-                                            var str="users"+key2+"/calendarEvents/"+key3
-                                            console.log(str)
-                                            //usersRef(str).remove()
-                                            usersRef.child(key2).child(keyy).child(key3).child("startDate").set(newstart);
-                                            //db.ref(str).remove();
+                                        if (name===val.title&&start===val.startDate){ usersRef.child(key2).child(keyy).child(key3).child("startDate").set(newstart);
                                         }
                                     })
                                 }
@@ -1015,17 +929,16 @@ export default {
                 alert("Please submit a change");
             }
             this.eventClickStart=this.newEventStart;
-            //alert("if you're finished making edits to this event, press done to see changes")
             this.newEventStart='';
         },
         submitEndEdit(){
             if (this.newEventEnd!=""){
                 var newend=this.newEventEnd;
-                console.log(newend)
+                console.log(newend);
                 var name=this.eventClickTitle;
                 var start=this.eventClickStart;
                 var end=this.eventClickEnd;
-                console.log(start)
+                console.log(start);
 
                 var id=this.user.uid;
                 usersRef.once("value").then(function(snapshot){
@@ -1033,7 +946,7 @@ export default {
                     var childKey = snapshot.child().key;
                     snapshot.forEach(function(user){
                         var key2=user.key;
-                        console.log(key2)
+                        console.log(key2);
                         if (key2===id){
                             user.forEach(function(thing){
                                 var keyy=thing.key;
@@ -1046,13 +959,7 @@ export default {
                                         var key3=f.key;
                                         var val=f.val();
                                         console.log(f.val());
-                                        if (name===val.title&&start===val.startDate){
-                                            console.log("try to delate")
-                                            var str="users"+key2+"/calendarEvents/"+key3
-                                            console.log(str)
-                                            //usersRef(str).remove()
-                                            usersRef.child(key2).child(keyy).child(key3).child("endDate").set(newend);
-                                            //db.ref(str).remove();
+                                        if (name===val.title&&start===val.startDate){ usersRef.child(key2).child(keyy).child(key3).child("endDate").set(newend);
                                         }
                                     })
                                 }
@@ -1064,7 +971,6 @@ export default {
             else {
                 alert("Please submit a change");
             }
-            //alert("if you're finished making edits to this event, press done to see changes")
             this.eventClickEnd=this.newEventEnd;
             this.newEventEnd='';
         },
@@ -1077,7 +983,7 @@ export default {
             var name=this.eventClickTitle;
             var start=this.eventClickStart;
             var end=this.eventClickEnd;
-            console.log(start)
+            console.log(start);
 
             var id=this.user.uid;
             usersRef.once("value").then(function(snapshot){
@@ -1085,7 +991,7 @@ export default {
                 var childKey = snapshot.child().key;
                 snapshot.forEach(function(user){
                     var key2=user.key;
-                    console.log(key2)
+                    console.log(key2);
                     if (key2===id){
                         user.forEach(function(thing){
                             var keyy=thing.key;
@@ -1099,12 +1005,7 @@ export default {
                                     var val=f.val();
                                     console.log(f.val());
                                     if (name===val.title&&start===val.startDate){
-                                        console.log("try to delate")
-                                        var str="users"+key2+"/calendarEvents/"+key3
-                                        console.log(str)
-                                        //usersRef(str).remove()
                                         usersRef.child(key2).child(keyy).child(key3).remove();
-                                        //db.ref(str).remove();
                                     }
                                 })
                             }
@@ -1117,24 +1018,21 @@ export default {
         },
         
         dateClick (date){
-            console.log(date)
+            console.log(date);
             var da=date.toISOString().substring(0,10);
-            console.log(da)
             var check=prompt("If you would you like to add an event the following day: "+date+", Please add a name for the event:")
             if (check!=null){
-                console.log("here")
-                console.log(date)
+                console.log(date);
                 var toadd=usersRef.child(this.user.uid).child("calendarEvents");
                 toadd.push({
                     title: check,
                     startDate: da
-                })
+                });
             }
         },
         
         dateChange(date){
-            console.log("wenthere")
-            console.log(date)
+            console.log(date);
             this.showDate=date;
         },
         expand (){
@@ -1145,9 +1043,6 @@ export default {
         },
         createTrip(){
             if (this.user){
-                //this.mapHasBeen=true;
-                //this.searchAct=false;
-                //this.userAct=false;
                 this.activityUS=false;
                 this.userStuff=false;
                 if (this.planTrip===false){
@@ -1159,29 +1054,6 @@ export default {
                     this.planTrip=true;
                     this.displayFaves=false;
                     this.normmodalOpen=true;
-/*                    if (this.mapHasBeen===false){
-                        var i;
-                        for (i=0; i<this.allHikes.length;i++){
-                            this.circles.push({
-                                    id: this.allHikes[i][2].id,
-                                    center: {
-                                        lng: this.allHikes[i][0],
-                                        lat: this.allHikes[i][1]
-                                    },
-                                    radius: 60000,
-                                    text: this.allHikes[i][2].name,
-                                    options: {
-                                        strokeColor: "red",
-                                        strokeOpacity: 0.8,
-                                        strokeWeight: 0.5,
-                                        fillColor: "orange",
-                                        fillOpacity: 0.3
-                                    }
-
-                                })
-                        }
-                    }*/
-                //this.addTrip=true;
                 }
             }
             else{
@@ -1193,7 +1065,6 @@ export default {
             this.closeByResults=true;
             var i;
                 var nearMarkers=[];
-            //console.log(this.userMarkers[0].position.lat)
                 for (i=0; i<this.userMarkers.length;i++){
                     if (this.userMarkers[i]!=""){
                         var j;
@@ -1201,22 +1072,22 @@ export default {
                         var mlongmin=Math.abs(this.userMarkers[i].position.lng)-2;
                         var mlatmax=Math.abs(this.userMarkers[i].position.lat)+2;
                         var mlatmin=Math.abs(this.userMarkers[i].position.lat)-2;
-                        console.log(mlongmax+"and"+mlongmin)
+                        console.log(mlongmax+"and"+mlongmin);
                         var markercloses=[];
                         for (j=0; j<this.allHikes.length; j++){
 
                             var hlong=Math.abs(this.allHikes[j][0]);
-                            console.log(hlong)
+                            console.log(hlong);
                             var hlat=Math.abs(this.allHikes[j][1]);
                             if (hlong<mlongmax && hlong>mlongmin && hlat<mlatmax && hlat>mlatmin){
-                                    markercloses.push(this.allHikes[j])
+                                    markercloses.push(this.allHikes[j]);
                                 }
                         }
                         nearMarkers.push({
                                 pin: this.userMarkers[i],
                                 hike: markercloses
                         });
-                        console.log(nearMarkers)
+                        console.log(nearMarkers);
                         }
                     }
                     this.closeBy=nearMarkers;
@@ -1228,17 +1099,16 @@ export default {
         
         addMarker (event) {
             var toadd=usersRef.child(this.user.uid).child("markers");
-            var name=prompt("Please enter a name for your marker:", "Ex. My Start Location")
-            console.log(name)
+            var name=prompt("Please enter a name for your marker:", "Ex. My Start Location");
+            console.log(name);
             if (name!=null){
                 toadd.push({
                     position: { lat: event.latLng.lat(), lng: event.latLng.lng() },
                     name: name,
                     title: name
-                })
+                });
                 var i;
                 var nearMarkers=[];
-            //console.log(this.userMarkers[0].position.lat)
                 for (i=0; i<this.userMarkers.length;i++){
                     if (this.userMarkers[i]!=""){
                         var j;
@@ -1246,22 +1116,22 @@ export default {
                         var mlongmin=Math.abs(this.userMarkers[i].position.lng)-2;
                         var mlatmax=Math.abs(this.userMarkers[i].position.lat)+2;
                         var mlatmin=Math.abs(this.userMarkers[i].position.lat)-2;
-                        console.log(mlongmax+"and"+mlongmin)
+                        console.log(mlongmax+"and"+mlongmin);
                         var markercloses=[];
                         for (j=0; j<this.allHikes.length; j++){
 
                             var hlong=Math.abs(this.allHikes[j][0]);
-                            console.log(hlong)
+                            console.log(hlong);
                             var hlat=Math.abs(this.allHikes[j][1]);
                             if (hlong<mlongmax && hlong>mlongmin && hlat<mlatmax && hlat>mlatmin){
-                                    markercloses.push(this.allHikes[j])
+                                    markercloses.push(this.allHikes[j]);
                                 }
                         }
                         nearMarkers.push({
                                 pin: this.userMarkers[i],
                                 hike: markercloses
                         });
-                        console.log(nearMarkers)
+                        console.log(nearMarkers);
                         }
                     }
                     this.closeBy=nearMarkers;
@@ -1269,8 +1139,7 @@ export default {
             
         },
         showMarker(m){
-            console.log(m)
-            this.markerModal=true;
+            document.getElementById("markerModal").style.display="block";
             this.clickedMarker=m;
             this.clickedMarkerName=m.name;
             this.clickedMarkerLat=m.position.lat;
@@ -1280,6 +1149,7 @@ export default {
         
         closeMarkerModal(){
             this.markerModal=false;
+            document.getElementById("markerModal").style.display="none";
         },
         
         deleteMarker(){
@@ -1292,7 +1162,7 @@ export default {
                 var childKey = snapshot.child().key;
                 snapshot.forEach(function(user){
                     var key2=user.key;
-                    console.log(key2)
+                    console.log(key2);
                     if (key2===id){
                         user.forEach(function(thing){
                             var keyy=thing.key;
@@ -1306,12 +1176,7 @@ export default {
                                     var val=f.val();
                                     console.log(f.val());
                                     if (name===val.name&&lat===val.position.lat&&long===val.position.lng){
-                                        console.log("try to delate")
-                                        var str="users"+key2+"/markers/"+key3
-                                        console.log(str)
-                                        //usersRef(str).remove()
                                         usersRef.child(key2).child(keyy).child(key3).remove();
-                                        //db.ref(str).remove();
                                     }
                                 })
                             }
@@ -1346,7 +1211,6 @@ export default {
         },
         
         addHiketoCalendar() {
-            //document.getElementById()
             var toadd=usersRef.child(this.user.uid).child("calendarEvents");
             console.log(toadd);
             if (this.newEndDate!==''){
@@ -1354,15 +1218,15 @@ export default {
                     title: this.addHikeObj,
                     startDate: this.newStartDate,
                     endDate: this.newEndDate,
-                })
+                });
             }
             else {
                 toadd.push({
                     title: this.addHikeObj,
                     startDate: this.newStartDate,
-                })
+                });
             }
-            console.log("added")
+            console.log("added");
             this.newStartDate='';
             this.newEndDate='';
             this.addHikeObj='';
@@ -1372,18 +1236,18 @@ export default {
         addTriptoCalendar(){
             var toadd=usersRef.child(this.user.uid).child("calendarEvents");
             console.log(toadd);
-            console.log("addtrip")
-            console.log(this.newTripStartDate)
+            console.log("addtrip");
+            console.log(this.newTripStartDate);
             toadd.push({
                 title: this.newTripName,
                 startDate: this.newTripStartDate,
                 endDate: this.newTripEndDate
-            })
+            });
             this.events.push({
                 title: this.newTripName,
                 startDate: this.newTripStartDate,
                 endDate: this.newTripEndDate
-            })
+            });
             this.newTripName='';
             this.newTripStartDate='';
             this.newTripEndDate='';
@@ -1394,8 +1258,6 @@ export default {
 //        },
         
         showMap(){
-            //this.searchAct=false;
-            //this.userAct=false;
             this.activityUS=false;
             this.userStuff=false;
             this.categDisplay=false;
@@ -1408,14 +1270,12 @@ export default {
             this.normmodalOpen=true;
             
             var svg = d3.select("svg");
-            var projection = d3.geoMercator()
+            var projection = d3.geoMercator();
                 
             var path = d3.geoPath()
               .projection(projection);
             console.log("here3");
-            //var url = "assets/ca.json";
-            //d3.json(url, function(err, geoData) {
-                //console.log(geoData);
+            
               d3.select("svg").append("path")
                 .attr("d", path(this.mapData))
                 .attr("stroke", "black")
@@ -1438,16 +1298,8 @@ export default {
                         d3.select("#location").text("Location: "+d[2].city);
                         d3.select("#activity").text("Activity Type: "+d[2].activity);
                         d3.select("#length").text("Length: "+d[2].length+" miles");
-                        //var el = document.createElement("p");
-                        //el.innerHTML=d[2].description;
-                        //console.log(el)
-                        //var t = d[2].description.replace(/<\/?[^>]+(>|$)/g, "");
-                        //console.log(d[2].description.split("<br>"))
-                        //d3.select("#description").appendHTML(el);
-                        //d3.select("#description").text(t)
                         d3.select("#description").selectAll("div").remove();
                         var l=d3.select("#description").append('div').html(d[2].description);
-                        //l.html(d[2].description)
                         d3.select("#url").attr("href", d[2].url);
                         d3.select("#url").text("More Trail Info");
                         d3.select("#pic").attr("src", d[2].pic);
@@ -1459,8 +1311,6 @@ export default {
         },
         
         showCategory(){
-            //this.searchAct=false;
-            //this.userAct=false;
             this.activityUS=false;
             this.userStuff=false;
             console.log(this.users)
@@ -1493,28 +1343,27 @@ export default {
             if (this.user){
                 this.signedIn=true;
             }
-            console.log(this.hikeModal)
             document.getElementById("hikeM").style.display="block";
         },
         
         addToFaves(){
             var toadd=usersRef.child(this.user.uid).child("favourites");
             toadd.push(this.trailModal);
-            alert("Added to Favourites!")
+            alert("Added to Favourites!");
             
         },
         removeFave(trail){
-            console.log(this.userFavourites)
+            console.log(this.userFavourites);
             //remove trail
             var id=this.user.uid;
             //usersRef.child(id).child(favourites)
-            console.log(id)
+            console.log(id);
             usersRef.once("value").then(function(snapshot){
                 var key=snapshot.key;
                 var childKey = snapshot.child().key;
                 snapshot.forEach(function(user){
                     var key2=user.key;
-                    console.log(key2)
+                    console.log(key2);
                     if (key2===id){
                         user.forEach(function(thing){
                             var keyy=thing.key;
@@ -1528,12 +1377,7 @@ export default {
                                     var val=f.val();
                                     console.log(f.val());
                                     if (trail[0]===val[0]&&trail[1]===val[1]&&trail[2].id===val[2].id){
-                                        console.log("try to delate")
-                                        var str="users"+key2+"/favourites/"+key3
-                                        console.log(str)
-                                        //usersRef(str).remove()
                                         usersRef.child(key2).child(keyy).child(key3).remove();
-                                        //db.ref(str).remove();
                                     }
                                 })
                             }
@@ -1553,19 +1397,8 @@ export default {
             this.categDisplay=false;
             this.displayFaves=true;
             this.normmodalOpen=false;
-            /*var faves=[];
-            var i;
-            for (i=0;i<this.users.length;i++){
-                if (this.users[i].uid===this.user.uid){
-                    console.log(this.users[i].favourites);
-                    for (var thing in this.users[i].favourites){
-                        faves.push(this.users[i].favourites.thing);
-                    }
-                }
-            }
-            this.FaveTrails=faves;*/
             if (this.userFavourites.length===0){
-                console.log("here")
+                console.log("here");
                 this.nofaves=true;
             }
             else{
@@ -1575,7 +1408,7 @@ export default {
         },
         
         defaultCategory(){
-            console.log(this.categ)
+            console.log(this.categ);
             var setit=this.categ;
             var id=this.user.uid;
             usersRef.child(id).child("defaultCategory").set(setit);
@@ -1634,7 +1467,7 @@ export default {
             if(this.lengthSelect===''){
                 criteria[5]=0;
             }
-            console.log(criteria)
+            console.log(criteria);
             var getHikes=[];
             var i;
             for (i=0; i<this.allHikes.length; i++){
@@ -1766,7 +1599,6 @@ export default {
             var i;
             for (i=0;i<criteria.length;i++){
                 if (criteria[i]!=0){
-                    //activity.push(criteria[i])
                     if (i==0){
                         s=s+"Country: "+criteria[i]+" ";
                     }
@@ -1791,7 +1623,7 @@ export default {
             var date=new Date();
             s=s+" ("+date+")"
 
-            console.log(s)
+            console.log(s);
             searchActRef.child("sactivities").push(s);
         },
     }
@@ -1800,83 +1632,81 @@ export default {
 
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+    #app {
+      font-family: 'Avenir', Helvetica, Arial, sans-serif;
+      text-align: center;
+      color: #2c3e50;
+      margin-top: 60px;
+    }
 
-h1 {
-  font-weight: 500;
-    font-size: 33pt;
-    border: solid thin black;
-    max-width: 40%;
-    text-align: center;
-    margin: 0 auto
-}
+    h1 {
+      font-weight: 500;
+        font-size: 33pt;
+        border: solid thin black;
+        max-width: 40%;
+        text-align: center;
+        margin: 0 auto
+    }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
 
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
+    li {
+      display: inline-block;
+      margin: 0 10px;
+    }
 
-a {
-  color: #42b983;
-}
+    a {
+      color: #42b983;
+    }
     
     #navbarr{
         background-color: antiquewhite;
     }
 
     .modal {
-    position: fixed; 
-    z-index: 1000; 
-    padding-top: 10%;
-    padding-bottom: 10%;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    height: 80%; 
-    background-color: aliceblue;
-    overflow: scroll;
+        position: fixed; 
+        z-index: 1000; 
+        padding-top: 10%;
+        padding-bottom: 10%;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        height: 80%; 
+        background-color: aliceblue;
+        overflow: scroll;
         border: solid thin black;
-}
+    }
 
-.modal-content {
-    margin: auto;
-    display: block;
-    height: auto;
-    border-style: double;
-}
+    .modal-content {
+        margin: auto;
+        display: block;
+        height: auto;
+        border-style: double;
+    }
     
     #picModal{
         max-width: 60%;
     }
 
-.close {
-    position: absolute;
-    top: 15px;
-    right: 35px;
-    color: black;
-    font-size: 40px;
-    font-weight: bold;
-}
+    .close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: black;
+        font-size: 40px;
+        font-weight: bold;
+    }
 
-.close:hover,
-.close:focus {
-    color: darkred;
-    cursor: pointer;
-    
-}
+    .close:hover,
+    .close:focus {
+        color: darkred;
+        cursor: pointer;
+
+    }
     #map{
           width: 900px;
           height: 600px;
@@ -1887,14 +1717,14 @@ a {
         height: 600px;
         margin-left: auto;
       }
-        #other{
-            z-index: 100;
-            color: black;
-            background-color: #E1FEE3;
-            border-style: solid;
-            border-width: thin;
-            border-color: black;
-      }
+    #other{
+        z-index: 100;
+        color: black;
+        background-color: #E1FEE3;
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+    }
     #svg{
         border-style: solid;
         border-width: thin;
@@ -1908,7 +1738,7 @@ a {
         border-style: groove;
         border-width: thin;
         border-color: black;
-}
+    }
     button{
         border-style: solid;
         border-color: black;
@@ -1923,9 +1753,6 @@ a {
     }
     select{
         border-radius: 0px;
-    }
-    .day{
-        
     }
     .event{
         z-index: 1000;
@@ -2020,6 +1847,7 @@ a {
     }
     .clickTrail:hover{
         cursor: pointer;
+        background-color: lightblue;
     }
     
     .noClick:hover{
