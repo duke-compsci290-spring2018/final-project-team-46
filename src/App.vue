@@ -1827,7 +1827,7 @@ export default {
     }
     
     header{
-        background-image: url("./assets/grass2.jpg");
+        background-image: url("assets/grass2.jpg");
         background-size: cover;
         height: 200px;
     }
