@@ -1,15 +1,58 @@
 <template>
   <div id="app">
+        <div id="themeM" v-show="themeModal" class="modal">
+            <h4>Choose a colour from the colour wheel for your background!</h4>
+          <div @click="closeThemeModal()" class="close">&times;</div>
+        <div class="modal-content">
+            <input id="colourWheel" v-model="colourChoice" type="color">
+            <br><br>
+            <button @click="chooseTheme">Submit Colour Choice</button>
+            <button @click="cancelColour">Cancel, Go back to Default</button>
+        </div>
+    
+        </div>
+      
+        <div id="hikeM" v-show="hikeModal" class="modal">
+            <div @click="closeModal()" class="close">&times;</div>
+            <div class="modal-content">
+                <button id="addToFaves" @click="addToFaves" v-show="signedIn && normmodalOpen">Add to Favourites</button>
+                <h4 id="infoModal">{{infoModal}}</h4>
+                <p class="title">Location:</p>
+                <p id="locationModal">{{locationModal}}</p>
+                <p class="title">Activity:</p>
+                <p id="activityModal">{{activityModal}}</p>
+                <p class="title">Length:</p>
+                <p id="lengthModal">{{lengthModal}} mi</p>
+                <p class="title">Description:</p>
+                <p id="descriptionModal">{{descriptionModal}}</p>
+                <a id="urlModal" :href="urlModal">More Info</a>
+                <br>
+                <img id="picModal" :src="imgModal" alt="">
+            </div>
+        </div>
+      
+      <div class="extraButtons" v-show="admin">
+            <button @click="showUsers">See Users</button>
+            <button @click="showActivity">See Site Activity</button>
+        </div>
+      <header>
+    <authentication class="navbar-right"
+                    :getUser="getUser"
+                    :setUser="setUser" :refreshSetUser="refreshSetUser" :signedIn="signedIn">
+    </authentication>
       <h1>HikeAdvisor</h1>
-    <div id="navbar">
-      <button class="nav" @click="showMap">World Map</button>
-        <button class="nav" @click="search">Search for Trails</button>
+          </header>
+    <div id="navbarr" class="container">
+        <div class="row">
+        <button class="nav col" v-show="signedIn" @click="openThemeOptions">Choose Theme</button>
+      <button class="nav col" @click="showMap">World Map</button>
+        <button class="nav col" @click="search">Search for Trails</button>
         <!--<div id="dropdown">
             <button @click="dropDown">View Trails by Category</button>
             <i></i>
         </div>-->
         <button>View Trails by Category
-        <select @click="showCategory" id="categorySelect" class="nav" v-model="categ" name="View Trails by Category">
+        <select @click="showCategory" id="categorySelect" class="nav col" v-model="categ" name="View Trails by Category">
             <option></option>
             <option>All</option>
             <option>Long</option>
@@ -17,19 +60,28 @@
             <option>Short</option>
         </select>
             </button>
-        <button @click="createTrip" class="nav">Create a Trip</button>
+        <button @click="createTrip" class="nav col">Create a Trip</button>
+        </div>
+        </div>
+
         <br>
-        <authentication class="nav navbar-nav navbar-right"
-                    :getUser="getUser"
-                    :setUser="setUser">
-                </authentication>
         
         <div v-show="categDisplay" id="display">
-            <button @click="displayFavourites" v-show="signedIn">See Favourites</button>
-            <button @click="defaultCategory">Make Default</button>
-            <ul v-for="trail in categoryTrails">
-                <li :id="trail[2].id" class="nameClick" @click="openModal(trail)">{{ trail[2].name }}</li>
-            </ul>
+            <button class="categButtons" @click="displayFavourites" v-show="signedIn">See Favourite Hikes</button>
+            <button v-show="signedIn" class="categButtons" @click="defaultCategory">Make Current Category Default</button>
+            <br>
+            <br>
+            <div class="container">
+            <div id="trailDisplayList" class="row">
+            <div class="nameClick col-lg-3 col-md-5 col-sm-6" v-for="trail in categoryTrails">
+                <div>
+                <p :id="trail[2].id" class="clickTrail" @click="openModal(trail)">{{ trail[2].name }}</p>
+                <p>{{trail[2].city}}, {{trail[2].country}}</p>
+<!--                <img class="imgDisplay" :src="trail[2].pic">-->
+                </div>
+            </div>
+            </div>
+                </div>
         </div>
         <br>
         <div v-show="displayFaves">
@@ -39,31 +91,46 @@
                 <li :id="trail[2].id" class="nameClick" @click="openModal(trail)">{{ trail[2].name }}</li>
             </ul>
         </div>
-        <div v-show="hikeModal" class="modal">
-            <div @click="closeModal()" class="close">&times;</div>
-            <div class="modal-content">
-                <h4 id="infoModal">{{infoModal}}</h4>
-                <button @click="addToFaves" v-show="signedIn && normmodalOpen">Add to Favourites</button>
-                <p id="locationModal">{{locationModal}}</p>
-                <p id="activityModal">{{activityModal}}</p>
-                <p id="lengthModal">{{lengthModal}}</p>
-                <p id="descriptionModal">{{descriptionModal}}</p>
-                <a id="urlModal" :href="urlModal">More Info</a>
-                <br>
-                <br>
-                <img id="picModal" :src="imgModal" alt="">
+        
+        <div v-show="searchAct">
+            <h4>Search Activity</h4>
+            <div v-for="activity in searchActivities">
+                <div>{{activity}}</div>
             </div>
+        </div>
+      <br><br>
+        <div v-show="userAct">
+            <h4>User Activity</h4>
+            <div v-for="activity in userActivity">
+                <div>{{activity}}</div>
+            </div>
+        </div>
+        <div v-show="userStuff">
+            <h4>Users and Their Information</h4>
+            <div id="userdisplay" v-for="user in users">
+                <p class="title">Name:</p>
+                <div>{{user.name}}</div>
+                <br>
+                <p class="title">Email:</p>
+                <div>{{user.email}}</div>
+                <br>
+                <p class="title">ID:</p>
+                <div>{{user.uid}}</div>
+                <br>
+                <p class="title">Administration:</p>
+                <p>{{user.admin}}</p>
+                <button v-if="user.admin===false" @click="makeAdmin(user)">Make Admin</button>
+                <button v-else @click="removeAdmin(user)">Remove from Admin</button>
+            </div>
+    
         </div>
       
         <div v-show="searchQs" id="searchCriteria">
-            <p>Activity Type:</p>
-            <select v-model="activitySelect">
-                <option></option>
-                <option>Mountain Biking</option>
-                <option>Hiking</option>
-                <option>Camping</option>
-            </select>
-            <p>*Country:</p>
+            <h4>Search Criteria</h4>
+            <hr/>
+            <div class="row" id="qrow">
+            <div class="col-lg-4 col-md-5 col-sm">
+            <p class="searchQ">*Country:</p>
             <select v-model="countrySelect">
                 <option>United States</option>
                 <option>Canada</option>
@@ -73,22 +140,39 @@
                 <option>Netherlands</option>
                 <option>New Zealand</option>
             </select>
-            <p>State/Province:</p>
+            <br><br>
+            <p class="searchQ">State/Province:</p>
             <input v-model="stateSelect" placeholder="Ex. Colorado">
-            <p>City:</p>
+            <br><br>
+            <p class="searchQ">City:</p>
             <input v-model="citySelect" placeholder="Ex. Keystone">
-            <p>Trail/Park Name:</p>
-            <input v-model="trailnameSelect" placeholder="Ex. Westridge Loop">
-            <p>Trail Length:</p>
+            </div>
+                <br><br>
+            <div class="col-lg-4 col-md-5 col-sm">
+            <p class="searchQ">Activity Type:</p>
+            <select v-model="activitySelect">
+                <option></option>
+                <option>Mountain Biking</option>
+                <option>Hiking</option>
+                <option>Camping</option>
+            </select>
+            <br><br>
+            <p class="searchQ">Trail Length:</p>
             <select v-model="lengthSelect">
                 <option></option>
                 <option>Long (Greater than 12mi)</option>
                 <option>Medium (5-12 mi)</option>
                 <option>Short(Less than 5mi)</option>
             </select>
-            <br>
+                <br><br>
+                <p class="searchQ">Trail/Park Name:</p>
+            <input v-model="trailnameSelect" placeholder="Ex. Westridge Loop">
+                </div>
+                </div>
+            <br><br>
             <button @click="searchCriteria">Submit</button>
-            <p>*required field</p>
+            <br><p>*required field</p>
+            <hr/>
   
         </div>
         <div v-show="disMessage">
@@ -98,76 +182,130 @@
             </ul>
             <p>We displayed the closest results.</p>
         </div>
+      <br>
         <div v-show="displayResults" id="searchResults">
-            <ul v-for="traill in criteriaResults">
-                <li class="nameClick" @click="openModal(traill)">{{traill[2].name}}</li>
-            </ul>
+            <h4>Search Results</h4>
+            <hr/>
+            <div id="row">
+            <div class="col" id="resultsCol" v-for="traill in criteriaResults">
+                <div class="results" @click="openModal(traill)">{{traill[2].name}}</div>
+            </div>
+                </div>
         </div>
         <div v-show="worldMap">
-            <h1>World Map</h1>
+            <h3>World Map</h3>
             <p>The world map below displays hikes from the mashape trail api. By hovering over a trail marked by a green dot, the trail's information will display to the right.</p>
             <hr/>
                 
-            <div id="map">
+            <div class="row">
+            <div id="map" class="col-lg-8">
                 <svg id="svg"></svg>
             </div>
-            <div id="other">
+            <div id="other" class="col-lg-4">
             <h4 id="info"></h4>
                 <p id="location"></p>
                 <p id="activity"></p>
                 <p id="length"></p>
-                <p id="description"></p>
+                <div id="description"></div>
                 <a id="url"></a>
                 <br>
                 <br>
                 <img id="pic" src="" alt="">
             </div>
         </div>
+            </div>
       
         <div v-show="planTrip">
+            <div id="eventClickModal" v-show="eventClickModal" class="modal">
+                <div @click="closeEventModal()" class="close">&times;</div>
+                <div class="modal-content">
+                    <p class="title">Event:</p>
+                    <p>{{eventClickTitle}}</p>
+                    <p class="title">Start Date:</p>
+                    <p>{{eventClickStart}}</p>
+                    <p class="title">End Date:</p>
+                    <p>{{eventClickEnd}}</p>
+                    <button @click="editEvent">Edit event details</button>
+                    <br><br>
+                    <div v-show="eventEdits">
+                        <input :placeholder="eventClickTitle" v-model="newEventTitle">
+                        <button @click="submitTitleEdit">Change Title</button>
+                        <br><br>
+                        <input type="date" v-model="newEventStart" value="eventClickStart">
+                         <button @click="submitStartEdit">Change Start Date</button>
+                        <br><br>
+                        <input type="date" v-model="newEventEnd" value="eventClickEnd">
+                        <button @click="submitEndEdit">Change End Date</button>
+                        <br><br>
+    
+                    </div>
+                    <br><br>
+                    <button @click="deleteClickedEvent">Delete Event</button>
+                </div>
+    
+            </div>
+            <h4>Use the calendar below to plan trips. Add trips that are multiple days, click on individual days to add a day trip, and add hikes that you may be interested in doing! You can always view contents of your plans and delete or edit them if necessary.</h4>
+            <br>
             <calendar-view :events="userEvents" :enable-drag-drop="eventTimes" :starting-day-of-week="stow" @click-date="dateClick" @click-event="eventClick" @show-date-change="dateChange" :show-date="showDate"></calendar-view>
             <div id="empty"></div>
             <div id="addingEvent" v-show="addEvent">
                 <p>If you would like to add your selected trail to your calendar please select the start and end date (optional)</p>
-                <p>To add:</p>
+                <p class="title">To add:</p>
                 <p>{{addHikeObj}}</p>
-                <p>Start Date:</p>
-                <input id="hikeDateStart" v-model="newStartDate" type="datetime-local">
-                <p>End Date:</p>
-                <input id="hikeDateEnd" v-model="newEndDate" type="datetime-local">
+                <p class="title">Start Date:</p>
+                <input id="hikeDateStart" v-model="newStartDate" type="date">
+                <p class="title">End Date:</p>
+                <input id="hikeDateEnd" v-model="newEndDate" type="date">
+                <br><br>
                 <button @click="addHiketoCalendar">Add Hike to Calendar</button>
                 <button @click="cancelAdd">Cancel</button>
             </div>
             <hr/>
                 <button @click="expand">Add a Trip to your Calendar!</button>
                 <button @click="hide">^</button>
+                <br><br>
                 <div v-show="addTrip" id="addTrip">
                 <input placeholder="Trip Name" v-model="newTripName">
                 <p>Trip Start Date</p>
-                <input id="tripDateStart" v-model="newTripStartDate" type="datetime-local">
+                <input id="tripDateStart" v-model="newTripStartDate" type="date">
                 <p>Trip End Date</p>
-                <input id="tripDateEnd" v-model="newTripEndDate" type="datetime-local">
+                <input id="tripDateEnd" v-model="newTripEndDate" type="date">
                 <br>
                 <br>
                 <button @click="addTriptoCalendar">Add Trip to Calendar</button>
                 <button @click="cancelAddTrip">Cancel</button>
-                <p>Click any of the below hikes displayed on the map to view hike info. Double click to add this hike to your calendar. </p>
+                    
             
             </div>
             <hr/>
+            <h3>Hover over any of the below hikes displayed on the map to view hike name. Click to add this hike to your calendar. Drop pins in areas where you want to see what is close by!</h3>
+            <hr/>
+            <div v-show="markerModal" class="modal">
+                <div @click="closeMarkerModal()" class="close">&times;</div>
+                <div class="modal-content">
+                    <p>{{clickedMarkerName}}</p>
+                    <p>Latitude</p>
+                    <p>{{clickedMarkerLat}}</p>
+                    <p>Longtitude</p>
+                    <p>{{clickedMarkerLon}}</p>
+                    <button @click="deleteMarker">Delete Marker</button>
+    
+                </div>
+    
+            </div>
                 <gmap-map
                     :center="center"
                     :zoom="2"
                     @click="addMarker"
-                    style="height: 480px;"
+                    style="height: 480px; width: 80%; margin: 0 auto"
                     >
                     <gmap-marker
                         v-for="(m, index) in userMarkers"
                         :key="index+3"
                         :position="m.position"
                         :clickable="true"
-                        :draggable="true"
-                        @click="center = m.position"
+                        :title="m.title"
+                        @click="showMarker(m)"
                     >
                     </gmap-marker>
                     <a href="#addingEvent" v-smooth-scroll><gmap-circle
@@ -190,15 +328,16 @@
             <hr/>
             <button @click="seeCloseBy">Click to see trails close by to your pins!</button>
             <button @click="collapseCloseBy">x</button>
+            <br><br>
             <div v-show="closeByResults">
                 <ul v-for="close in closeBy">
                     <li>
-                        <p>Near by to your pin:</p>
-                        <p>{{close.pin.name}}</p>
-                        <p>Trails:</p>
+                        <h3>Near by to your pin:</h3>
+                        <h4>"{{close.pin.name}}"</h4>
                         <ul v-for="hike in close.hike">
-                            <p @click="openModal(hike)">{{hike[2].name}}</p>
+                            <p class="closePinTrail" @click="openModal(hike)">{{hike[2].name}}</p>
                             <a href="#empty" v-smooth-scroll><button @click="addTrailEvent(hike)">Add to Calendar</button></a>
+                            <br><br>
                         </ul>
                     </li>
                 </ul>
@@ -206,11 +345,11 @@
             </div>
     
         </div>
-    </div>
   </div>
 </template>
 
 <script>
+    var categoryGlobal;
 import CalendarView from "vue-simple-calendar";
 //import CalendarView from "./components/CalendarView"
 
@@ -223,7 +362,7 @@ import * as d3 from 'd3';
 import MAPDATA from './assets/ca.json';
 var VueD3 = require('vue-d3')
 
-import { usersRef, storageRef, tripRef, db } from './database.js'
+import { usersRef, storageRef, tripRef, db, userActRef, searchActRef } from './database.js'
 import Authentication from './components/Authentication'
     
 //Vue.use(VueD3)
@@ -240,6 +379,7 @@ var myRequest = new Request('https://trailapi-trailapi.p.mashape.com/', myInit);
 var TRAILS_API_URL = 'https://trailapi-trailapi.p.mashape.com/?api-key=A8exhlC63FmshIMkUXoplrWGYduqp1uJNp5jsn3zvB9RO8Dc37'
 
 var allHikes=[];
+var circleS=[];
 fetch(myRequest).then(data=>data.json()).then(data=>{
     console.log(data)
     var i;
@@ -276,6 +416,22 @@ fetch(myRequest).then(data=>data.json()).then(data=>{
             var pt=[data.places[i].lon, data.places[i].lat, info];
             allHikes.push(pt);
         }
+        circleS.push({
+            id: data.places[i].id,
+            center: {
+                lng: data.places[i].lon,
+                lat: data.places[i].lat
+            },
+            radius: 60000,
+            text: data.places[i].name,
+            options: {
+                strokeColor: "red",
+                strokeOpacity: 0.8,
+                strokeWeight: 0.5,
+                fillColor: "orange",
+                fillOpacity: 0.3
+            }
+        })
     }
 })
     
@@ -317,13 +473,6 @@ var filters= {
     All: function (hikes){
         return hikes;
     }
-}
-var circleOptions = {
-    strokeColor: '#FF0000',
-    strokeOpacity: 0.8,
-    strokeWeight: 1,
-    fillColor: '#FF0000',
-    fillOpacity: 0.3
 }
     
 export default {
@@ -371,7 +520,7 @@ export default {
                     name: "durr"
                 }
         ],
-        circles: [],
+        circles: circleS,
         events: [
             {
                 startDate: "2018-04-19",
@@ -400,6 +549,31 @@ export default {
         FaveTrails: [],
         normmodalOpen: true,
         nofaves: false,
+        eventClickStart: '',
+        eventClickEnd: '',
+        eventClickTitle: '',
+        eventClickModal: false,
+        eventEdits: false,
+        themeModal: false,
+        colourChoice: '',
+        markerModal: false,
+        clickedMarkerName: '',
+        clickedMarkerLat: '',
+        clickedMarkerLon: '',
+        clickedMarker: {},
+        clickedEvent: {},
+        newEventStart: '',
+        newEventEnd: '',
+        newEventTitle: '',
+        admin: false,
+        searchAct: false,
+        searchActivities: [],
+        mapHasBeen: false,
+        userStuff: false,
+        userActivity: [],
+        userAct: false,
+        nouserAct: false,
+        nosearchAct: false,
     }
   },
     components: {
@@ -408,7 +582,9 @@ export default {
     },
     firebase: {
         users: usersRef,
-        trip: tripRef
+        trip: tripRef,
+        uaAct: userActRef,
+        searchAct: searchActRef
     },
     computed: {
         categoryTrails(){
@@ -509,27 +685,37 @@ export default {
                 //looking for existing account
                 var i;
                 console.log(this.users);
-                console.log(this.users.length)
-                //console.log(usersRef.child["Owvyee1h6eN7jtlpm9kVdQOH16w1"].child("uid"))
-                console.log(usersRef.child["Owvyee1h6eN7jtlpm9kVdQOH16w1"])
-                var str="users/Owvyee1h6eN7jtlpm9kVdQOH16w1"
-                console.log(db.ref("hello"))
-                if (usersRef.child[id]){
-                    found=true;
-                    console.log("no need")
-                    return;
-                }
-                //for (var i=0; i<this.users.length;i++){
-                    //console.log(this.users[i]['.key'])
-                    //if (this.users[i]['.key']===id){
-//                        this.categ=this.users[i].defaultCategory;
-//                        console.log(this.categ)
-//                        found=true;
-//                        console.log("no need")
-//                        return;
-//                    }
-//                }
+                console.log(this.users[0]);
+                var category;
+                var colour;
+                var admin;
+                this.users.forEach(function(user) {
+                    console.log(user);
+                    if (user.uid===id){
+                        found=true;
+                        console.log("no need to add")
+                        console.log(user.defaultCategory)
+                        console.log(user.defaultCategory)
+                        category=user.defaultCategory;
+                        colour=user.backColour;
+                        admin=user.admin;
+                        console.log("hellooooo")
+                    }
+                });
                 console.log(found)
+                if (found===true){
+                    this.categ=category;
+                    if (colour!="default"){
+                        document.body.style.backgroundColor = colour;
+                    }
+                    if (admin===true){
+                        this.admin=true;
+                    }
+                    var date=new Date();
+                    var str=user.name+"("+user.email+") signed in on "+date;
+            
+                    db.ref("userActivity").child("activities").push(str)
+                }
                 //new account created
                 if (found===false){
                     this.user = user;
@@ -537,7 +723,65 @@ export default {
                 }
             }
             
+            
         },
+        refreshSetUser(user){
+            this.searchAct=false;
+            this.userAct=false;
+            this.userStuff=false;
+            this.user=user;
+            this.signedIn=true;
+            var category="";
+            var colour="";
+            var id=user.uid;
+            usersRef.once("value").then((snapshot)=>{
+                var categ1;
+                var key=snapshot.key;
+                var childKey = snapshot.child().key;
+                snapshot.forEach(function(user){
+                    var categ2;
+                    var key2=user.key;
+                    //console.log(key2)
+                    if (key2===id){
+                        user.forEach(function(thing){
+                            var categ3;
+                            var keyy=thing.key;
+                            var val =thing.val();
+                            //console.log(keyy);
+                            //console.log(val);
+                            if (keyy==="backColour"){
+                                console.log("backcolour is "+val)
+                                var colour=val;
+                                if (colour!="" && colour!="default"){
+                                    document.body.style.backgroundColor = colour;
+                                }
+                            }
+                            if(keyy==="defaultCategory"){
+                                //this.categ=val;
+                            }
+                        })
+                    }
+                })
+            })
+            //wow this is faster LOL
+            usersRef.child(id).child("defaultCategory").once("value").then((snapshot)=>{
+                console.log(this.categ)
+                console.log(snapshot.val())
+                this.categ=snapshot.val();
+            })
+            
+            usersRef.child(id).child("admin").once("value").then((snapshot)=>{
+                console.log(this.categ)
+                console.log(snapshot.val())
+                var admin=snapshot.val();
+                if (admin===true){
+                    this.admin=true;
+                }
+            })
+            
+            
+        },
+        
         createAccount(){
             var attempt=this.user.uid;
             usersRef.child(attempt).set({
@@ -548,28 +792,341 @@ export default {
                 favourites: [""],
                 calendarEvents: [""],
                 markers: [""],
-                defaultCategory: "All"
+                defaultCategory: "All",
+                backColour: "default",
+                admin: "false"
             })
             console.log("logged new")
+            
+            var date=new Date();
+            var str=this.user.name+"("+this.user.email+") created an account on "+date;
+            
+            db.ref("userActivity").child("activities").push(str)
         },
         
         signedOut(){
+            this.searchAct=false;
+            this.userAct=false;
+            this.userStuff=false;
             this.signedIn=false;
             this.categDisplay=true;
             this.disMessage=false;
             this.displayResults=false;
             this.searchQs=false;
             this.worldMap=false;
-            this.planTrip=false;         
+            this.planTrip=false;   
+            document.body.style.backgroundColor = "#F0F8F8";
+            this.categ="All";
+        },
+        
+        showActivity(){
+            this.searchAct=true;
+            this.categDisplay=false;
+            this.searchQs=false;
+            this.worldMap=false;
+            this.planTrip=false;
+            this.displayFaves=false;
+            this.normmodalOpen=true;
+            this.displayResults=false;
+            this.userStuff=false;
+            
+            console.log(this.searchActivities)
+            console.log(this.users)
+            db.ref("searchActivity").child("sactivities").once("value").then((snapshot)=>{
+                console.log(snapshot.val())
+                this.searchActivities=snapshot.val();
+            })
+            if (this.searchActivities.length===0){
+                this.nosearchAct=true;
+            }
+            
+            this.userAct=true;
+            db.ref("userActivity").child("activities").once("value").then((snapshot)=>{
+                this.userActivity=snapshot.val();
+            })
+            if (this.userActivity.length===0){
+                this.nouserAct=true;
+            }
+        },
+        showUsers(){
+            this.userStuff=true;
+            this.searchAct=false;
+            this.userAct=false;
+            this.categDisplay=false;
+            this.searchQs=false;
+            this.worldMap=false;
+            this.planTrip=false;
+            this.displayFaves=false;
+            this.displayResults=false;
+        },
+        
+        makeAdmin(user){
+            usersRef.child(user.uid).child("admin").set(true);
+        },
+        removeAdmin(user){
+            usersRef.child(user.uid).child("admin").set(false);
+        },
+        
+        openThemeOptions(){
+            //this.themeModal=true;
+            document.getElementById("themeM").style.display="block";
+            
+        },
+        
+        closeThemeModal(){
+            this.themeModal=false;
+            document.getElementById("themeM").style.display="none";
+        },
+        
+        chooseTheme(){
+            console.log(this.colourChoice)
+            var setit=this.colourChoice;
+            var id=this.user.uid;
+            if (setit!=""){
+                usersRef.child(id).child("backColour").set(setit);
+                document.body.style.backgroundColor = setit;
+                this.themeModal=false;
+            }
+            else{
+                alert("Please select a colour!")
+            }
+            
+        },
+        cancelColour(){
+            var id=this.user.uid;
+            usersRef.child(id).child("backColour").set("default");
+            document.body.style.backgroundColor = "#F0F8F8";
+            this.themeModal=false;
         },
         
         eventClick(event){
             console.log("wenthere")
             console.log(event)
+            console.log(event.startDate)
+            console.log(event.startDate.toISOString());
+            this.eventClickStart=event.startDate.toISOString().substring(0,10);
+            console.log(this.eventClickStart)
+            this.eventClickEnd=event.endDate.toISOString().substring(0,10);
+            this.eventClickTitle=event.title;
+            //this.eventClickModal=true;
+            this.clickedEvent=event;
+            document.getElementById("eventClickModal").style.display="block";
         },
+        closeEventModal(){
+            this.eventClickModal=false;
+            this.eventEdits=false;
+            document.getElementById("eventClickModal").style.display="none";
+        },
+        editEvent(){
+            this.eventEdits=true;
+        },
+        submitTitleEdit(){
+            //usersRef.child(this.user.uid).child("calendarEvents")
+            //key of event?
+            //this.eventEdits=false;
+            console.log(this.newEventTitle)
+            console.log(this.newEventStart)
+            console.log(this.newEventEnd)
+            var title;
+            if (this.newEventTitle!=""){
+                title=this.newEventTitle;
+                var name=this.eventClickTitle;
+                var start=this.eventClickStart;
+                var end=this.eventClickEnd;
+                console.log(start)
+
+                var id=this.user.uid;
+                usersRef.once("value").then(function(snapshot){
+                    var key=snapshot.key;
+                    var childKey = snapshot.child().key;
+                    snapshot.forEach(function(user){
+                        var key2=user.key;
+                        console.log(key2)
+                        if (key2===id){
+                            user.forEach(function(thing){
+                                var keyy=thing.key;
+                                var val =thing.val();
+                                console.log(keyy);
+                                console.log(val);
+                                if (keyy==="calendarEvents"){
+                                    thing.forEach(function(f){
+                                        console.log(f.key);
+                                        var key3=f.key;
+                                        var val=f.val();
+                                        console.log(f.val());
+                                        if (name===val.title&&start===val.startDate){
+                                            console.log("try to delate")
+                                            var str="users"+key2+"/calendarEvents/"+key3
+                                            console.log(str)
+                                            //usersRef(str).remove()
+                                            usersRef.child(key2).child(keyy).child(key3).child("title").set(title);
+                                            //db.ref(str).remove();
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                })
+            }
+            else {
+                alert("Please submit a change");
+            }
+            //alert("if you're finished making edits to this event, press done to see changes")
+            this.eventClickTitle=this.newEventTitle;
+            this.newEventTitle='';
+        },
+        submitStartEdit(){
+            if (this.newEventStart!=""){
+                var newstart=this.newEventStart;
+                console.log(newstart)
+                var name=this.eventClickTitle;
+                var start=this.eventClickStart;
+                var end=this.eventClickEnd;
+                console.log(start)
+
+                var id=this.user.uid;
+                usersRef.once("value").then(function(snapshot){
+                    var key=snapshot.key;
+                    var childKey = snapshot.child().key;
+                    snapshot.forEach(function(user){
+                        var key2=user.key;
+                        console.log(key2)
+                        if (key2===id){
+                            user.forEach(function(thing){
+                                var keyy=thing.key;
+                                var val =thing.val();
+                                console.log(keyy);
+                                console.log(val);
+                                if (keyy==="calendarEvents"){
+                                    thing.forEach(function(f){
+                                        console.log(f.key);
+                                        var key3=f.key;
+                                        var val=f.val();
+                                        console.log(f.val());
+                                        if (name===val.title&&start===val.startDate){
+                                            console.log("try to delate")
+                                            var str="users"+key2+"/calendarEvents/"+key3
+                                            console.log(str)
+                                            //usersRef(str).remove()
+                                            usersRef.child(key2).child(keyy).child(key3).child("startDate").set(newstart);
+                                            //db.ref(str).remove();
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                })
+            }
+            else {
+                alert("Please submit a change");
+            }
+            this.eventClickStart=this.newEventStart;
+            //alert("if you're finished making edits to this event, press done to see changes")
+            this.newEventStart='';
+        },
+        submitEndEdit(){
+            if (this.newEventEnd!=""){
+                var newend=this.newEventEnd;
+                console.log(newend)
+                var name=this.eventClickTitle;
+                var start=this.eventClickStart;
+                var end=this.eventClickEnd;
+                console.log(start)
+
+                var id=this.user.uid;
+                usersRef.once("value").then(function(snapshot){
+                    var key=snapshot.key;
+                    var childKey = snapshot.child().key;
+                    snapshot.forEach(function(user){
+                        var key2=user.key;
+                        console.log(key2)
+                        if (key2===id){
+                            user.forEach(function(thing){
+                                var keyy=thing.key;
+                                var val =thing.val();
+                                console.log(keyy);
+                                console.log(val);
+                                if (keyy==="calendarEvents"){
+                                    thing.forEach(function(f){
+                                        console.log(f.key);
+                                        var key3=f.key;
+                                        var val=f.val();
+                                        console.log(f.val());
+                                        if (name===val.title&&start===val.startDate){
+                                            console.log("try to delate")
+                                            var str="users"+key2+"/calendarEvents/"+key3
+                                            console.log(str)
+                                            //usersRef(str).remove()
+                                            usersRef.child(key2).child(keyy).child(key3).child("endDate").set(newend);
+                                            //db.ref(str).remove();
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                })
+            }
+            else {
+                alert("Please submit a change");
+            }
+            //alert("if you're finished making edits to this event, press done to see changes")
+            this.eventClickEnd=this.newEventEnd;
+            this.newEventEnd='';
+        },
+        doneChanges(){
+            this.eventEdits=false;
+            this.eventClickModal=false;
+        },
+        
+        deleteClickedEvent(){
+            var name=this.eventClickTitle;
+            var start=this.eventClickStart;
+            var end=this.eventClickEnd;
+            console.log(start)
+
+            var id=this.user.uid;
+            usersRef.once("value").then(function(snapshot){
+                var key=snapshot.key;
+                var childKey = snapshot.child().key;
+                snapshot.forEach(function(user){
+                    var key2=user.key;
+                    console.log(key2)
+                    if (key2===id){
+                        user.forEach(function(thing){
+                            var keyy=thing.key;
+                            var val =thing.val();
+                            console.log(keyy);
+                            console.log(val);
+                            if (keyy==="calendarEvents"){
+                                thing.forEach(function(f){
+                                    console.log(f.key);
+                                    var key3=f.key;
+                                    var val=f.val();
+                                    console.log(f.val());
+                                    if (name===val.title&&start===val.startDate){
+                                        console.log("try to delate")
+                                        var str="users"+key2+"/calendarEvents/"+key3
+                                        console.log(str)
+                                        //usersRef(str).remove()
+                                        usersRef.child(key2).child(keyy).child(key3).remove();
+                                        //db.ref(str).remove();
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            })
+            this.eventClickModal=false;
+            
+        },
+        
         dateClick (date){
             console.log(date)
-            var da=date.toISOString();
+            var da=date.toISOString().substring(0,10);
             console.log(da)
             var check=prompt("If you would you like to add an event the following day: "+date+", Please add a name for the event:")
             if (check!=null){
@@ -596,35 +1153,43 @@ export default {
         },
         createTrip(){
             if (this.user){
-                this.categDisplay=false;
-                this.disMessage=false;
-                this.displayResults=false;
-                this.searchQs=false;
-                this.worldMap=false;
-                this.planTrip=true;
-                this.displayFaves=false;
-                this.normmodalOpen=true;
-                var i;
-                for (i=0; i<this.allHikes.length;i++){
-                    this.circles.push({
-                            id: this.allHikes[i][2].id,
-                            center: {
-                                lng: this.allHikes[i][0],
-                                lat: this.allHikes[i][1]
-                            },
-                            radius: 60000,
-                            text: this.allHikes[i][2].name,
-                            options: {
-                                strokeColor: "red",
-                                strokeOpacity: 0.8,
-                                strokeWeight: 0.5,
-                                fillColor: "orange",
-                                fillOpacity: 0.3
-                            }
+                //this.mapHasBeen=true;
+                this.searchAct=false;
+                this.userAct=false;
+                this.userStuff=false;
+                if (this.planTrip===false){
+                    this.categDisplay=false;
+                    this.disMessage=false;
+                    this.displayResults=false;
+                    this.searchQs=false;
+                    this.worldMap=false;
+                    this.planTrip=true;
+                    this.displayFaves=false;
+                    this.normmodalOpen=true;
+/*                    if (this.mapHasBeen===false){
+                        var i;
+                        for (i=0; i<this.allHikes.length;i++){
+                            this.circles.push({
+                                    id: this.allHikes[i][2].id,
+                                    center: {
+                                        lng: this.allHikes[i][0],
+                                        lat: this.allHikes[i][1]
+                                    },
+                                    radius: 60000,
+                                    text: this.allHikes[i][2].name,
+                                    options: {
+                                        strokeColor: "red",
+                                        strokeOpacity: 0.8,
+                                        strokeWeight: 0.5,
+                                        fillColor: "orange",
+                                        fillOpacity: 0.3
+                                    }
 
-                        })
+                                })
+                        }
+                    }*/
+                //this.addTrip=true;
                 }
-            //this.addTrip=true;
             }
             else{
                 alert("Sorry, you need to be logged in to create a Trip")
@@ -633,6 +1198,35 @@ export default {
         },
         seeCloseBy(){
             this.closeByResults=true;
+            var i;
+                var nearMarkers=[];
+            //console.log(this.userMarkers[0].position.lat)
+                for (i=0; i<this.userMarkers.length;i++){
+                    if (this.userMarkers[i]!=""){
+                        var j;
+                        var mlongmax=Math.abs(this.userMarkers[i].position.lng)+2;
+                        var mlongmin=Math.abs(this.userMarkers[i].position.lng)-2;
+                        var mlatmax=Math.abs(this.userMarkers[i].position.lat)+2;
+                        var mlatmin=Math.abs(this.userMarkers[i].position.lat)-2;
+                        console.log(mlongmax+"and"+mlongmin)
+                        var markercloses=[];
+                        for (j=0; j<this.allHikes.length; j++){
+
+                            var hlong=Math.abs(this.allHikes[j][0]);
+                            console.log(hlong)
+                            var hlat=Math.abs(this.allHikes[j][1]);
+                            if (hlong<mlongmax && hlong>mlongmin && hlat<mlatmax && hlat>mlatmin){
+                                    markercloses.push(this.allHikes[j])
+                                }
+                        }
+                        nearMarkers.push({
+                                pin: this.userMarkers[i],
+                                hike: markercloses
+                        });
+                        console.log(nearMarkers)
+                        }
+                    }
+                    this.closeBy=nearMarkers;
         },
         
         collapseCloseBy(){
@@ -646,7 +1240,8 @@ export default {
             if (name!=null){
                 toadd.push({
                     position: { lat: event.latLng.lat(), lng: event.latLng.lng() },
-                    name: name
+                    name: name,
+                    title: name
                 })
                 var i;
                 var nearMarkers=[];
@@ -678,6 +1273,59 @@ export default {
                     }
                     this.closeBy=nearMarkers;
                 }
+            
+        },
+        showMarker(m){
+            console.log(m)
+            this.markerModal=true;
+            this.clickedMarker=m;
+            this.clickedMarkerName=m.name;
+            this.clickedMarkerLat=m.position.lat;
+            this.clickedMarkerLon=m.position.lng;
+            
+        },
+        
+        closeMarkerModal(){
+            this.markerModal=false;
+        },
+        
+        deleteMarker(){
+            var name=this.clickedMarkerName;
+            var lat=this.clickedMarkerLat;
+            var long=this.clickedMarkerLon;
+            var id=this.user.uid;
+            usersRef.once("value").then(function(snapshot){
+                var key=snapshot.key;
+                var childKey = snapshot.child().key;
+                snapshot.forEach(function(user){
+                    var key2=user.key;
+                    console.log(key2)
+                    if (key2===id){
+                        user.forEach(function(thing){
+                            var keyy=thing.key;
+                            var val =thing.val();
+                            console.log(keyy);
+                            console.log(val);
+                            if (keyy==="markers"){
+                                thing.forEach(function(f){
+                                    console.log(f.key);
+                                    var key3=f.key;
+                                    var val=f.val();
+                                    console.log(f.val());
+                                    if (name===val.name&&lat===val.position.lat&&long===val.position.lng){
+                                        console.log("try to delate")
+                                        var str="users"+key2+"/markers/"+key3
+                                        console.log(str)
+                                        //usersRef(str).remove()
+                                        usersRef.child(key2).child(keyy).child(key3).remove();
+                                        //db.ref(str).remove();
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            })
             
         },
         
@@ -746,12 +1394,16 @@ export default {
             this.newTripName='';
             this.newTripStartDate='';
             this.newTripEndDate='';
+            this.addTrip=false;
         },
 //        zoomed() {
 //            d3.select("svg").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 //        },
         
         showMap(){
+            this.searchAct=false;
+            this.userAct=false;
+            this.userStuff=false;
             this.categDisplay=false;
             this.disMessage=false;
             this.displayResults=false;
@@ -783,7 +1435,7 @@ export default {
                     .append("circle")
                     .attr("cx", function (d) { return projection(d)[0]; })
                     .attr("cy", function (d) { return projection(d)[1]; })
-                    .attr("r", "4px")
+                    .attr("r", "2px")
                     .attr("fill", "darkgreen")
                   //make hover so that will display info to the right
                     .on("mouseover", function(d){
@@ -792,7 +1444,16 @@ export default {
                         d3.select("#location").text("Location: "+d[2].city);
                         d3.select("#activity").text("Activity Type: "+d[2].activity);
                         d3.select("#length").text("Length: "+d[2].length+" miles");
-                        d3.select("#description").text("Description: "+d[2].description);
+                        //var el = document.createElement("p");
+                        //el.innerHTML=d[2].description;
+                        //console.log(el)
+                        //var t = d[2].description.replace(/<\/?[^>]+(>|$)/g, "");
+                        //console.log(d[2].description.split("<br>"))
+                        //d3.select("#description").appendHTML(el);
+                        //d3.select("#description").text(t)
+                        d3.select("#description").selectAll("div").remove();
+                        var l=d3.select("#description").append('div').html(d[2].description);
+                        //l.html(d[2].description)
                         d3.select("#url").attr("href", d[2].url);
                         d3.select("#url").text("More Trail Info");
                         d3.select("#pic").attr("src", d[2].pic);
@@ -804,6 +1465,9 @@ export default {
         },
         
         showCategory(){
+            this.searchAct=false;
+            this.userAct=false;
+            this.userStuff=false;
             console.log(this.users)
             this.categDisplay=true;
             this.disMessage=false;
@@ -816,11 +1480,12 @@ export default {
         },
         
         closeModal(){
-            this.hikeModal=false;
+            //this.hikeModal=false;
+            document.getElementById("hikeM").style.display="none";
         },
         
         openModal(trail){
-            this.hikeModal=true;
+            //this.hikeModal=true;
             this.infoModal=trail[2].name;
             this.locationModal=trail[2].city;
             this.activityModal=trail[2].activity;
@@ -833,6 +1498,8 @@ export default {
             if (this.user){
                 this.signedIn=true;
             }
+            console.log(this.hikeModal)
+            document.getElementById("hikeM").style.display="block";
         },
         
         addToFaves(){
@@ -842,10 +1509,50 @@ export default {
             
         },
         removeFave(trail){
+            console.log(this.userFavourites)
             //remove trail
+            var id=this.user.uid;
+            //usersRef.child(id).child(favourites)
+            console.log(id)
+            usersRef.once("value").then(function(snapshot){
+                var key=snapshot.key;
+                var childKey = snapshot.child().key;
+                snapshot.forEach(function(user){
+                    var key2=user.key;
+                    console.log(key2)
+                    if (key2===id){
+                        user.forEach(function(thing){
+                            var keyy=thing.key;
+                            var val =thing.val();
+                            console.log(keyy);
+                            console.log(val);
+                            if (keyy==="favourites"){
+                                thing.forEach(function(f){
+                                    console.log(f.key);
+                                    var key3=f.key;
+                                    var val=f.val();
+                                    console.log(f.val());
+                                    if (trail[0]===val[0]&&trail[1]===val[1]&&trail[2].id===val[2].id){
+                                        console.log("try to delate")
+                                        var str="users"+key2+"/favourites/"+key3
+                                        console.log(str)
+                                        //usersRef(str).remove()
+                                        usersRef.child(key2).child(keyy).child(key3).remove();
+                                        //db.ref(str).remove();
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            })
+
         },
         
         displayFavourites(){
+            this.searchAct=false;
+            this.userAct=false;
+            this.userStuff=false;
             console.log("here")
             this.categDisplay=false;
             this.displayFaves=true;
@@ -875,10 +1582,13 @@ export default {
             console.log(this.categ)
             var setit=this.categ;
             var id=this.user.uid;
-            usersRef.child("users").child(id).child("defaultCategory").set(setit);
+            usersRef.child(id).child("defaultCategory").set(setit);
         },
         
         search(){
+            this.searchAct=false;
+            this.userAct=false;
+            this.userStuff=false;
             this.categDisplay=false;
             this.searchQs=true;
             this.worldMap=false;
@@ -1052,6 +1762,39 @@ export default {
                 this.disMessage=true;
                 this.searchMessages=messages;
             }
+            
+            var s="";
+            var activity=[];
+            var i;
+            for (i=0;i<criteria.length;i++){
+                if (criteria[i]!=0){
+                    //activity.push(criteria[i])
+                    if (i==0){
+                        s=s+"Country: "+criteria[i]+" ";
+                    }
+                    if (i==1){
+                        s=s+"City: "+criteria[i]+" ";
+                    }
+                    if (i==2){
+                       s=s+"State: "+criteria[i]+" ";
+                    }
+                    if (i==3){
+                        s=s+"Activity: "+criteria[i]+" ";
+                    }
+                    if (i==4){
+                        s=s+"Trail Name: "+criteria[i]+" ";
+                    }
+                    if (i==5){
+                        s=s+"Trail Length: "+criteria[i];
+                    }
+                    
+                }
+            }
+            var date=new Date();
+            s=s+" ("+date+")"
+
+            console.log(s)
+            searchActRef.child("sactivities").push(s);
         },
     }
 }
@@ -1068,8 +1811,13 @@ export default {
   margin-top: 60px;
 }
 
-h1, h2 {
-  font-weight: normal;
+h1 {
+  font-weight: 500;
+    font-size: 33pt;
+    border: solid thin black;
+    max-width: 40%;
+    text-align: center;
+    margin: 0 auto
 }
 
 ul {
@@ -1086,15 +1834,8 @@ a {
   color: #42b983;
 }
     
-    #navbar{
-        border-color: black;
+    #navbarr{
         background-color: antiquewhite;
-    }
-    .nav{
-        /*border-color: black;*/
-    }
-    .nav:hover{
-        background-color: beige;
     }
 
     .modal {
@@ -1107,8 +1848,9 @@ a {
     transform: translate(-50%, -50%);
     width: 80%;
     height: 80%; 
-    background-color: rgba(0,0,0,0.9);
+    background-color: aliceblue;
     overflow: scroll;
+        border: solid thin black;
 }
 
 .modal-content {
@@ -1126,7 +1868,7 @@ a {
     position: absolute;
     top: 15px;
     right: 35px;
-    color: white;
+    color: black;
     font-size: 40px;
     font-weight: bold;
 }
@@ -1148,12 +1890,18 @@ a {
         margin-left: auto;
       }
         #other{
-          width: 275px;
-          position: absolute;
-          top: 350px;
-          right: 0px;
-          height: 600px;
+            z-index: 100;
+            color: black;
+            background-color: #E1FEE3;
+            border-style: solid;
+            border-width: thin;
+            border-color: black;
       }
+    #svg{
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+    }
     
     .nameClick:hover{
         cursor: pointer;
@@ -1166,6 +1914,10 @@ a {
     button{
         border-style: solid;
         border-color: black;
+    }
+    button:hover{
+        background-color: darkgrey;
+        cursor: pointer;
     }
     input{
         border-style: solid;
@@ -1183,11 +1935,125 @@ a {
     div .event .offset2{
         z-index: 200;
     }
-    .calendar-view .day{
-
+    .calendar-view{
+        margin: 5px;
+    }
+    .calendar-view .header{
+        background-color: lightgray;
+    }
+    .calendar-view .header button{
+        background-color: white;
+    }
+    .calendar-view .week .event{
+        background-color: #C2ECF9;
     }
     .calendar-view .weeks{
         height: 30em;
         overflow: scroll;
+        background-color: #F6F7F7;
+    }
+    
+    #trailDisplayList{
+        justify-content: space-around;
+    }
+    .nameClick{
+        border-style: double;
+        border-width: thin;
+        border-color: black;
+        margin: 2px;
+        background-color: #EEFBFA;
+    }
+    .imgDisplay{
+        max-width: 30%;
+    }
+    #userdisplay{
+        border-style: groove;
+        border-width: thin;
+        border-color: black;
+        width: 50%;
+        margin: 0 auto;
+        padding: 4px;
+    }
+    #pic{
+        max-width: 50%;
+    }
+    .searchQ{
+        font-size: 13pt;
+        font-weight: 500;
+    }
+    .navbar-right{
+        background-color: aliceblue;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    #firebaseui-auth-container{
+        position: fixed;
+        z-index: 100;
+    }
+    .firebaseui-title{
+        font-size: 13pt;
+        text-align: center;
+        border: none;
+        margin: auto;
+    }
+    
+    header{
+        background-image: url("assets/grass2.jpg");
+        background-size: cover;
+        height: 200px;
+    }
+    .extraButtons{
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .categButtons{
+        background-color: azure;
+    }
+    body{
+        background-color: #F0F8F8;
+    }
+    #qrow{
+        justify-content: center;
+    }
+    .clickTrail{
+        font-weight: 300;
+    }
+    .clickTrail:hover{
+        cursor: pointer;
+    }
+    #resultsCol{
+        max-width: 50%;
+        margin: 0 auto;
+    }
+    .results{
+        margin: 10px;
+        border: solid thin black;
+        background-color: gainsboro;
+    }
+    .results:hover{
+        background-color: azure;
+        cursor: pointer;
+    }
+    
+    .closePinTrail{
+        font-size: 14pt;
+        font-weight: 500;
+    }
+    .title{
+        font-weight: bold;
+    }
+    select{
+        border: solid thin black;
+    }
+    #colourWheel{
+        width: 30%;
+    }
+    #addToFaves{
+        float: right;
+    }
+    #infoModal{
+        text-align: center;
     }
 </style>

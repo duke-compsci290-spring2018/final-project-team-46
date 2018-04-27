@@ -17,6 +17,14 @@ npm run build
 
 For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
+Error:
+vue.esm.js?efeb:591 [Vue warn]: Duplicate keys detected: '7054'. This may cause an update error.
+
+found in
+
+---> <App> at src/App.vue
+       <Root>
+
 Anna Munro adm58
 
 w3schools
@@ -48,24 +56,39 @@ DUVALL:
 -firebase authentication
 
 TODO:
-STYLE LITERALLY EVERYTHING
--be able to remove trails
--work on default category/background colour
--work on user sign in troubles
--click on event to see details and edit them
+*administrator
+    *login activity
+    *trail search activity??
+    *make others admin
+*STYLE LITERALLY EVERYTHING
+*parse d3 descriptions
+
+
+*refresh FIXED
+*be able to remove trails from favourites
+*remove marker
+*remove event
+*edit event details
+*administrator
+    *login activity
+    *trail search activity??
+*work on default category/background colour
+*work on user sign in troubles
+*click on event to see details
+
 
 *fix select button to say View categories
 display lists of hikes pretty
 *close by trails update right away
 *calendar two events at same day
 *circles on google map better
-administrator?
-weird key error for map
+*administrator?
+*weird key error for map
 
 SIGN IN STUFF:
 login to:
     *have favourite trails
-    have default category
+    *have default category
     *create a trip
     *view favourite trails
 
@@ -76,12 +99,14 @@ DATABASE:
    * calendar events
 
 CALENDAR:
--click on event to see details and edit
+*click on event to see details
+*edit details
 *click on day to add event
 *add hike scrolls you up?? or opens as modal
--drag and drop?
 
 extras:
-similar hikes?
-add image etc to a hike
+-similar hikes?
+-add image etc to a hike
+-drag and drop?
+-zoom in on d3
 

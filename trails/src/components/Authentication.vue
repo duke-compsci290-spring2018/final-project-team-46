@@ -23,7 +23,9 @@ export default {
     // methods provided to change value of user in parent component
     props: [
         'getUser',
-        'setUser'
+        'setUser',
+        'refreshSetUser',
+        'signedIn'
     ],
     // let HTML template access user as if it were a variable in this component
     computed: {
@@ -72,14 +74,22 @@ export default {
         signOut () {
             Firebase.auth().signOut()
             this.setUser(null)
+        },
+        refresh(user){
+            this.refreshSetUser({
+                name: user.displayName,
+                email: user.email,
+                uid: user.uid,
+                isAnonymous: user.isAnonymous
+            })
         }
     },
     mounted () {
         // allow user to automatically log in if returning to site after refresh
         Firebase.auth().onAuthStateChanged(authState => {
             if (authState) {
-                this.signIn(authState)
-                console.log(authState)
+                this.refresh(authState)
+                //console.log(authState)
             }
         })
     }

@@ -1,4 +1,7 @@
-//import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+import BootstrapVue from 'bootstrap-vue'
 import Vue from 'vue'
 import App from './App.vue'
 import 'firebaseui/dist/firebaseui.css'
@@ -16,6 +19,7 @@ Vue.use(VueGoogleMaps, {
 })
 Vue.use(VueFire)
 Vue.use(vueSmoothScroll)
+Vue.use(BootstrapVue);
 
 new Vue({
   el: '#app',
