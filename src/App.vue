@@ -24,7 +24,7 @@
                 <p class="title">Length:</p>
                 <p id="lengthModal">{{lengthModal}} mi</p>
                 <p class="title">Description:</p>
-                <p id="descriptionModal">{{descriptionModal}}</p>
+                <div id="descriptionModal"></div>
                 <a id="urlModal" :href="urlModal">More Info</a>
                 <br>
                 <img id="picModal" :src="imgModal" alt="">
@@ -1335,7 +1335,10 @@ export default {
             this.locationModal=trail[2].city;
             this.activityModal=trail[2].activity;
             this.urlModal=trail[2].url;
-            this.descriptionModal=trail[2].description;
+            var el=document.createElement('div');
+            el.innerHTML=trail[2].description;
+            document.getElementById("descriptionModal").innerHTML="";
+            document.getElementById("descriptionModal").append(el);
             this.lengthModal=trail[2].length;
             this.imgModal=trail[2].pic;
             this.trailModal=trail;
