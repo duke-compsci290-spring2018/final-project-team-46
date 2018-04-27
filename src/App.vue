@@ -4,7 +4,7 @@
             <h4>Choose a colour from the colour wheel for your background!</h4>
           <div @click="closeThemeModal()" class="close">&times;</div>
         <div class="modal-content">
-            <input id="colourWheel" v-model="colourChoice" type="color">
+            <label>Colour:<input id="colourWheel" v-model="colourChoice" type="color"></label>
             <br><br>
             <button @click="chooseTheme">Submit Colour Choice</button>
             <button @click="cancelColour">Cancel, Go back to Default</button>
