@@ -51,15 +51,14 @@
             <button @click="dropDown">View Trails by Category</button>
             <i></i>
         </div>-->
-        <button>View Trails by Category
-        <select @click="showCategory" id="categorySelect" class="nav col" v-model="categ" name="View Trails by Category">
+            <button>
+        <label class="catLabel">View Trails By Category<select @click="showCategory" id="categorySelect" class="nav col" v-model="categ" name="View Trails by Category">
             <option></option>
             <option>All</option>
             <option>Long</option>
             <option>Medium</option>
             <option>Short</option>
-        </select>
-            </button>
+    </select></label></button>
         <button @click="createTrip" class="nav col">Create a Trip</button>
         </div>
         </div>
@@ -130,8 +129,7 @@
             <hr/>
             <div class="row" id="qrow">
             <div class="col-lg-4 col-md-5 col-sm">
-            <p class="searchQ">*Country:</p>
-            <select v-model="countrySelect">
+            <label class="searchQ">*Country:<br><br><select v-model="countrySelect">
                 <option>United States</option>
                 <option>Canada</option>
                 <option>United Kingdom</option>
@@ -139,34 +137,29 @@
                 <option>Turkey</option>
                 <option>Netherlands</option>
                 <option>New Zealand</option>
-            </select>
+            </select></label>
             <br><br>
-            <p class="searchQ">State/Province:</p>
-            <input v-model="stateSelect" placeholder="Ex. Colorado">
+            <label class="searchQ">State/Province:<br><br><input v-model="stateSelect" placeholder="Ex. Colorado"></label>
             <br><br>
-            <p class="searchQ">City:</p>
-            <input v-model="citySelect" placeholder="Ex. Keystone">
+            <label class="searchQ">City:<br><br><input v-model="citySelect" placeholder="Ex. Keystone"></label>
             </div>
                 <br><br>
             <div class="col-lg-4 col-md-5 col-sm">
-            <p class="searchQ">Activity Type:</p>
-            <select v-model="activitySelect">
+            <label class="searchQ">Activity Type:<br><br><select v-model="activitySelect">
                 <option></option>
                 <option>Mountain Biking</option>
                 <option>Hiking</option>
                 <option>Camping</option>
-            </select>
+            </select></label>
             <br><br>
-            <p class="searchQ">Trail Length:</p>
-            <select v-model="lengthSelect">
+            <label class="searchQ">Trail Length:<br><br><select v-model="lengthSelect">
                 <option></option>
                 <option>Long (Greater than 12mi)</option>
                 <option>Medium (5-12 mi)</option>
                 <option>Short(Less than 5mi)</option>
-            </select>
+            </select></label>
                 <br><br>
-                <p class="searchQ">Trail/Park Name:</p>
-            <input v-model="trailnameSelect" placeholder="Ex. Westridge Loop">
+            <label class="searchQ">Trail/Park Name:<br><br><input v-model="trailnameSelect" placeholder="Ex. Westridge Loop"></label>
                 </div>
                 </div>
             <br><br>
@@ -228,13 +221,13 @@
                     <button @click="editEvent">Edit event details</button>
                     <br><br>
                     <div v-show="eventEdits">
-                        <input :placeholder="eventClickTitle" v-model="newEventTitle">
+                        <label>New Title:<input :placeholder="eventClickTitle" v-model="newEventTitle"></label>
                         <button @click="submitTitleEdit">Change Title</button>
                         <br><br>
-                        <input type="date" v-model="newEventStart" value="eventClickStart">
+                        <label>New Start Date:<input type="date" v-model="newEventStart" value="eventClickStart"></label>
                          <button @click="submitStartEdit">Change Start Date</button>
                         <br><br>
-                        <input type="date" v-model="newEventEnd" value="eventClickEnd">
+                        <label>New End Date:<input type="date" v-model="newEventEnd" value="eventClickEnd"></label>
                         <button @click="submitEndEdit">Change End Date</button>
                         <br><br>
     
@@ -252,10 +245,8 @@
                 <p>If you would like to add your selected trail to your calendar please select the start and end date (optional)</p>
                 <p class="title">To add:</p>
                 <p>{{addHikeObj}}</p>
-                <p class="title">Start Date:</p>
-                <input id="hikeDateStart" v-model="newStartDate" type="date">
-                <p class="title">End Date:</p>
-                <input id="hikeDateEnd" v-model="newEndDate" type="date">
+                <label class="title">Start Date:<input id="hikeDateStart" v-model="newStartDate" type="date"></label>
+                <label class="title">End Date:<input id="hikeDateEnd" v-model="newEndDate" type="date"></label>
                 <br><br>
                 <button @click="addHiketoCalendar">Add Hike to Calendar</button>
                 <button @click="cancelAdd">Cancel</button>
@@ -265,11 +256,9 @@
                 <button @click="hide">^</button>
                 <br><br>
                 <div v-show="addTrip" id="addTrip">
-                <input placeholder="Trip Name" v-model="newTripName">
-                <p>Trip Start Date</p>
-                <input id="tripDateStart" v-model="newTripStartDate" type="date">
-                <p>Trip End Date</p>
-                <input id="tripDateEnd" v-model="newTripEndDate" type="date">
+                <label>Name:<input placeholder="Trip Name" v-model="newTripName"></label>
+                <label>Start Date:<input id="tripDateStart" v-model="newTripStartDate" type="date"></label>
+                <label>End Date:<input id="tripDateEnd" v-model="newTripEndDate" type="date"></label>
                 <br>
                 <br>
                 <button @click="addTriptoCalendar">Add Trip to Calendar</button>
@@ -1341,6 +1330,11 @@ export default {
             document.getElementById("descriptionModal").append(el);
             this.lengthModal=trail[2].length;
             this.imgModal=trail[2].pic;
+            console.log(trail[2].pic)
+            if (trail[2].pic!=null){
+                console.log("not null");
+                document.getElementById("picModal").alt=("trail pic")
+            }
             this.trailModal=trail;
             
             if (this.user){
@@ -1746,6 +1740,13 @@ export default {
         border-style: solid;
         border-color: black;
     }
+    catLabel{
+        background-color: white;
+    }
+    catLabel:hover{
+        background-color: darkgrey;
+        cursor: pointer; 
+    }
     button:hover{
         background-color: darkgrey;
         cursor: pointer;
@@ -1808,6 +1809,10 @@ export default {
     .searchQ{
         font-size: 13pt;
         font-weight: 500;
+        background-color: aliceblue;
+    }
+    .searchQ:hover{
+        background-color: aliceblue;
     }
     .navbar-right{
         background-color: aliceblue;
