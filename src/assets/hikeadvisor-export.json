@@ -1,0 +1,93 @@
+{
+  "users" : {
+    "Owvyee1h6eN7jtlpm9kVdQOH16w1" : {
+      "backColour" : "default",
+      "calendarEvents" : [ "" ],
+      "defaultCategory" : "All",
+      "email" : "max@gmail.com",
+      "favourites" : [ "" ],
+      "isAnonymous" : false,
+      "markers" : [ "" ],
+      "name" : "Max Kam",
+      "uid" : "Owvyee1h6eN7jtlpm9kVdQOH16w1",
+        "admin": false
+    },
+    "bJB1nfBGX9VXcB8xv6ZF7sXq6C32" : {
+      "backColour" : "default",
+      "calendarEvents" : [ "" ],
+      "defaultCategory" : "All",
+      "email" : "amy@gmail.com",
+      "favourites" : [ "" ],
+      "isAnonymous" : false,
+      "markers" : [ "" ],
+      "name" : "Amy Chatoo",
+      "uid" : "bJB1nfBGX9VXcB8xv6ZF7sXq6C32",
+        "admin": false
+    },
+    "o6S3bWHGhWSPEQvtO8niYFbZYO62" : {
+      "backColour" : "#83cabc",
+      "calendarEvents" : {
+        "0" : "",
+        "-LAt_LV9Uv0DK8QiCykZ" : {
+          "endDate" : "2018-04-11",
+          "startDate" : "2018-04-04",
+          "title" : "My Day"
+        },
+        "-LAuHVI7eN3x90SJzFQ4" : {
+          "endDate" : "2018-04-14",
+          "startDate" : "2018-04-11",
+          "title" : "San Fran"
+        }
+      },
+      "defaultCategory" : "Long",
+      "email" : "a.munro222@gmail.com",
+      "favourites" : {
+        "0" : "",
+        "-LAtBn_IDRB8ABSMA6GC" : [ -73.74772, 42.64841, {
+          "activity" : "mountain biking",
+          "city" : "Albany",
+          "country" : "United States",
+          "description" : "This trail is a scenic ride, jog, run, or walk through some great sceanery along the Hudson River.  Areas include the Corning Preserve, Albany's Riverfront Park, and a few other parks and areas.&lt;br /&gt;<br />&lt;br /&gt;<br />The trail itself is paved asphalt and maintained.  It is open and available year round.  This is another great family friendly trail with several spots to stop and have a picnic if you choose.",
+          "id" : 2942,
+          "length" : 6,
+          "name" : "Mohawk Hudson Hike Bike Trail",
+          "state" : "New York",
+          "url" : "http://www.singletracks.com/item.php?c=1&i=5293"
+        } ]
+      },
+      "isAnonymous" : false,
+      "markers" : {
+        "0" : "",
+        "-LAtVTnXAVbfr80cns54" : {
+          "name" : "Start",
+          "position" : {
+            "lat" : 49.58444739912661,
+            "lng" : -114.87358674765505
+          },
+          "title" : "Start"
+        }
+      },
+      "name" : "Anna Munro",
+      "uid" : "o6S3bWHGhWSPEQvtO8niYFbZYO62",
+        "admin": true
+    },
+    "q5ahd03icMaWMaooBcjy3aWs1AE2" : {
+      "backColour" : "default",
+      "calendarEvents" : [ "" ],
+      "defaultCategory" : "All",
+      "email" : "muffie@gmail.com",
+      "favourites" : [ "" ],
+      "isAnonymous" : false,
+      "markers" : [ "" ],
+      "name" : "Muffie Westerkam",
+      "uid" : "q5ahd03icMaWMaooBcjy3aWs1AE2",
+        "admin": false
+    }
+  },
+    "userActivity": {
+        "activities": [""]
+    },
+    "searchActivity": {
+        "sactivities": [""]
+    }
+}

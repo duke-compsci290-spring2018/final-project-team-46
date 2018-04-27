@@ -1,0 +1,24 @@
+{
+        "users": [{
+                    "name": "Anna Munro",
+                    "email": "a.munro222@gmail,com",
+                    "uid": "o6S3bWHGhWSPEQvtO8niYFbZYO62",
+                    "isAnonymous": "",
+                    "favourites":[],
+                    "calendarEvents":[
+                        {
+                            "startDate": "2018-04-19",
+                            "endDate": "2018-04-22",
+                            "title": "My Trip To California"
+                        }
+                    ],
+                    "markers":[
+                        {
+                            "position": { "lat": 35.99, "lng": -78.89 },
+                            "name": "durr"
+                        }
+                    ],
+                    "defaultCategory": "All"
+            
+        }]
+    }
