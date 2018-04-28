@@ -1,6 +1,38 @@
 {
+  "searchActivity" : {
+    "sactivities" : {
+      "0" : "",
+      "-LB29Ww4m7pAAPDR3eUJ" : "Country: canada Activity: hiking  (Thu Apr 26 2018 14:14:42 GMT-0400 (EDT))",
+      "-LB2fN2p8eNdiwbuGFg4" : "Country: united states State: colorado Activity: camping  (Thu Apr 26 2018 16:38:14 GMT-0400 (EDT))",
+      "-LB3MCoYkZpAezwoHTOF" : "Country: united states Activity: hiking  (Thu Apr 26 2018 19:49:46 GMT-0400 (EDT))",
+      "-LB3rBiSYeIQtkRbMzPK" : "Country: united states State: colorado  (Thu Apr 26 2018 22:09:29 GMT-0400 (EDT))",
+      "-LB44HDzNaG4LXj72b4u" : "Country: united states City: san francisco State: california Activity: hiking Trail Length: long (greater than 12mi) (Thu Apr 26 2018 23:11:01 GMT-0400 (EDT))"
+    }
+  },
+  "userActivity" : {
+    "activities" : {
+      "0" : "",
+      "-LB2t6U7PL2tAA98wbHD" : "Anna Munro(a.munro222@gmail.com) signed in on Thu Apr 26 2018 17:38:14 GMT-0400 (EDT)",
+      "-LB2t_R_klDmmhQFe7j7" : "Anna Munro(a.munro222@gmail.com) signed in on Thu Apr 26 2018 17:40:17 GMT-0400 (EDT)",
+      "-LB3MkCdwMisGRxXGVrR" : "Anna Munro(a.munro222@gmail.com) signed in on Thu Apr 26 2018 19:52:06 GMT-0400 (EDT)",
+      "-LB3NSU6sETHQO2u54Ao" : "Anna Munro(a.munro222@gmail.com) signed in on Thu Apr 26 2018 19:55:12 GMT-0400 (EDT)",
+      "-LB3NhulwPIFreeGZxd0" : "Anna Munro(a.munro222@gmail.com) signed in on Thu Apr 26 2018 19:56:19 GMT-0400 (EDT)",
+      "-LB3RbiggNE7BF7mirr0" : "Anna Munro(a.munro222@gmail.com) signed in on Thu Apr 26 2018 20:13:21 GMT-0400 (EDT)",
+      "-LB3iIG6KtbwCsfCDrYS" : "Anna Munro(a.munro222@gmail.com) signed in on Thu Apr 26 2018 21:30:36 GMT-0400 (EDT)",
+      "-LB3sNLZDXUUDxbN_yvg" : "Muffie Westerkam(muffie@gmail.com) signed in on Thu Apr 26 2018 22:14:38 GMT-0400 (EDT)",
+      "-LB43vEqjrJSlfRnbl9X" : "Muffie Westerkam(muffie@gmail.com) signed in on Thu Apr 26 2018 23:09:27 GMT-0400 (EDT)",
+      "-LB45mLiaMZKUG7GBRWz" : "Anna Munro(a.munro222@gmail.com) signed in on Thu Apr 26 2018 23:17:35 GMT-0400 (EDT)",
+      "-LB46kAzGzaVy2ckh58N" : "Muffie Westerkam(muffie@gmail.com) signed in on Thu Apr 26 2018 23:21:48 GMT-0400 (EDT)",
+      "-LB474jWCP5JJ65OhboI" : "Anna Munro(a.munro222@gmail.com) signed in on Thu Apr 26 2018 23:23:16 GMT-0400 (EDT)",
+      "-LB6g_9IVMkfHaFF9krI" : "Anna Munro(a.munro222@gmail.com) signed in on Fri Apr 27 2018 11:21:57 GMT-0400 (EDT)",
+      "-LB6v4ra5HyEqQ86lsP5" : "Anna Munro(a.munro222@gmail.com) signed in on Fri Apr 27 2018 12:25:21 GMT-0400 (EDT)",
+      "-LB7L0fp75NHgFBOPWgo" : "Anna Munro(a.munro222@gmail.com) signed in on Fri Apr 27 2018 14:23:01 GMT-0400 (EDT)",
+      "-LB7_CvIL6z1LSnrrBFn" : "Anna Munro(a.munro222@gmail.com) signed in on Fri Apr 27 2018 15:29:24 GMT-0400 (EDT)"
+    }
+  },
   "users" : {
     "Owvyee1h6eN7jtlpm9kVdQOH16w1" : {
+      "admin" : false,
       "backColour" : "default",
       "calendarEvents" : [ "" ],
       "defaultCategory" : "All",
@@ -9,10 +41,10 @@
       "isAnonymous" : false,
       "markers" : [ "" ],
       "name" : "Max Kam",
-      "uid" : "Owvyee1h6eN7jtlpm9kVdQOH16w1",
-        "admin": false
+      "uid" : "Owvyee1h6eN7jtlpm9kVdQOH16w1"
     },
     "bJB1nfBGX9VXcB8xv6ZF7sXq6C32" : {
+      "admin" : false,
       "backColour" : "default",
       "calendarEvents" : [ "" ],
       "defaultCategory" : "All",
@@ -21,10 +53,10 @@
       "isAnonymous" : false,
       "markers" : [ "" ],
       "name" : "Amy Chatoo",
-      "uid" : "bJB1nfBGX9VXcB8xv6ZF7sXq6C32",
-        "admin": false
+      "uid" : "bJB1nfBGX9VXcB8xv6ZF7sXq6C32"
     },
     "o6S3bWHGhWSPEQvtO8niYFbZYO62" : {
+      "admin" : true,
       "backColour" : "#83cabc",
       "calendarEvents" : {
         "0" : "",
@@ -37,22 +69,33 @@
           "endDate" : "2018-04-14",
           "startDate" : "2018-04-11",
           "title" : "San Fran"
+        },
+        "-LB3mv3BBrmC_mZ2TUET" : {
+          "endDate" : "2018-04-27",
+          "startDate" : "2018-04-25",
+          "title" : "Newest Trip"
+        },
+        "-LB3nJmpT1kWTFuE3Zna" : {
+          "endDate" : "2018-04-18",
+          "startDate" : "2018-04-16",
+          "title" : "2 Day Trip"
         }
       },
       "defaultCategory" : "Long",
       "email" : "a.munro222@gmail.com",
       "favourites" : {
         "0" : "",
-        "-LAtBn_IDRB8ABSMA6GC" : [ -73.74772, 42.64841, {
+        "-LB7OxCEVTqLDWAGy3yH" : [ -118.479284, 37.456597, {
           "activity" : "mountain biking",
-          "city" : "Albany",
+          "city" : "Bishop",
           "country" : "United States",
-          "description" : "This trail is a scenic ride, jog, run, or walk through some great sceanery along the Hudson River.  Areas include the Corning Preserve, Albany's Riverfront Park, and a few other parks and areas.&lt;br /&gt;<br />&lt;br /&gt;<br />The trail itself is paved asphalt and maintained.  It is open and available year round.  This is another great family friendly trail with several spots to stop and have a picnic if you choose.",
-          "id" : 2942,
-          "length" : 6,
-          "name" : "Mohawk Hudson Hike Bike Trail",
-          "state" : "New York",
-          "url" : "http://www.singletracks.com/item.php?c=1&i=5293"
+          "description" : "The Volcanic Tablelands is a vast volcanic landscape that was formed over 700,000 years ago by materials spewing from the Long Valley caldera, located to the northwest.",
+          "id" : 24041,
+          "length" : 23,
+          "name" : "Volcanic Tablelands",
+          "pic" : "http://images.singletracks.com/2014/01/IMG_2624-0.jpg",
+          "state" : "California",
+          "url" : "http://www.singletracks.com/item.php?c=1&i=7409"
         } ]
       },
       "isAnonymous" : false,
@@ -68,26 +111,84 @@
         }
       },
       "name" : "Anna Munro",
-      "uid" : "o6S3bWHGhWSPEQvtO8niYFbZYO62",
-        "admin": true
+      "uid" : "o6S3bWHGhWSPEQvtO8niYFbZYO62"
     },
     "q5ahd03icMaWMaooBcjy3aWs1AE2" : {
+      "admin" : false,
       "backColour" : "default",
-      "calendarEvents" : [ "" ],
-      "defaultCategory" : "All",
+      "calendarEvents" : {
+        "0" : "",
+        "-LB422K-K-tNAxZnT0G8" : {
+          "startDate" : "2018-04-04",
+          "title" : "My Day Trip"
+        },
+        "-LB431USPG6v9oT59rMy" : {
+          "startDate" : "2018-04-12",
+          "title" : "Point Campground"
+        },
+        "-LB454jGqiLeB6Lox0IT" : {
+          "endDate" : "2018-05-15",
+          "startDate" : "2018-05-04",
+          "title" : "muffie"
+        }
+      },
+      "defaultCategory" : "Medium",
       "email" : "muffie@gmail.com",
-      "favourites" : [ "" ],
+      "favourites" : {
+        "0" : "",
+        "-LB41ylnc6N0a9ZQTFo3" : [ -118.399664, 37.361388, {
+          "activity" : "camping",
+          "city" : "Bishop",
+          "country" : "United States",
+          "description" : "Fires, charcoal grills, and portable stoves outside developed campgrounds require a permit, or - depending on the current level of wildfire danger - may not be allowed.  Contact the Public Lands Center (White Mountain Ranger Station) in Bishop to obtain a permit, and read it carefully!",
+          "id" : 24077,
+          "length" : 3,
+          "name" : "Pleasant Valley Pit",
+          "state" : "California",
+          "url" : "http://www.tripleblaze.com/trail.php?c=2&i=10527"
+        } ],
+        "-LB44Iz9zYHXFGbhwuXW" : [ -122.145463, 37.809022, {
+          "activity" : "hiking",
+          "city" : "Oakland",
+          "country" : "United States",
+          "description" : "A pristine wooded canyon is protected in this 290-acre parkland near Merritt College in Oakland. The park is an ideal place for hiking, running, biking, dog walking, and similar activities.",
+          "id" : 22982,
+          "length" : 0,
+          "name" : "Leona Canyon Regional Open Space Preserve",
+          "state" : "California",
+          "url" : "http://www.tripleblaze.com/trail.php?c=3&i=6951"
+        } ]
+      },
       "isAnonymous" : false,
-      "markers" : [ "" ],
+      "markers" : {
+        "0" : "",
+        "-LB43OqkMCwSgKQQ94s3" : {
+          "name" : "My Pin",
+          "position" : {
+            "lat" : 34.10688070113363,
+            "lng" : -113.85061689259805
+          },
+          "title" : "My Pin"
+        },
+        "-LB43QmA0Qb3b1g1c_ma" : {
+          "name" : "Pin 2",
+          "position" : {
+            "lat" : 32.95531008190477,
+            "lng" : -116.12544663789072
+          },
+          "title" : "Pin 2"
+        },
+        "-LB45BCBS1tHNk-pwDOr" : {
+          "name" : "muffie",
+          "position" : {
+            "lat" : 41.130826640917135,
+            "lng" : -79.5166015625
+          },
+          "title" : "muffie"
+        }
+      },
       "name" : "Muffie Westerkam",
-      "uid" : "q5ahd03icMaWMaooBcjy3aWs1AE2",
-        "admin": false
+      "uid" : "q5ahd03icMaWMaooBcjy3aWs1AE2"
     }
-  },
-    "userActivity": {
-        "activities": [""]
-    },
-    "searchActivity": {
-        "sactivities": [""]
-    }
+  }
 }

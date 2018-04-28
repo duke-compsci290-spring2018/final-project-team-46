@@ -1,0 +1,71 @@
+Amy Munro:
+
+Amy looked at my website Friday April 27 at her home. She wrote down the comments as she went through the website and then after she was done looking at it. She was someone who I wanted to look at it as a general young person who likes outdoors. This is what she wrote down:
+
+    "I like that there is a separate place for search criteria so you can narrow down the options of trails. 
+
+    I also really like the world map view of the hiking trails. It would be cool if the map could be zoomed in on so you could look at trails in particular states, etc - the way that it is in the create a trip portion. 
+
+    My favourite part is the option to create a trip. It could maybe be more clear how to drop a pin on the map (I didn’t realize you could just click on it). But, I like how you can then name the pins that you create. 
+
+    I would like it if there were pictures for every single trail. 
+
+    The site is easy to navigate and I like that you can sign in and create your own profile. I like that you can then personalize the page (ie change the colour of the background). "
+    
+
+Khalil Chatoo:
+
+Khalil also looked at my website Friday April 27. He is also does a lot of computer science and front end work, so I thought it would be good to get an experienced person to look at my website too. 
+
+    "1) HOME PAGE
+
+    I arrive at the HikeAdvisor index page and am presented with a list of hikes in no particular order. I notice the filter 'View Trails by Category' and start to sort through different trails (Long, Medium, Short). I think differentiating the filters from the main navigation bar would provide better UX.
+
+    2) CREATE AN ACCOUNT
+
+    Creating an account is extremely easy and very intuitive. I really enjoyed this process and don't have many suggestions to improve this.
+
+    3) NAVIGATE TO WORLD MAP
+
+    This provides a nice interactive map where I can select the hikes around me and view more information. I suggest differentiating the hike on the map that is currently selected by making it's colour different from the other hikes.
+    The description and thumbnail of the hike beside the map is a nice touch and I like the link provided to view more trail info if I want to investigate further.
+
+    4) NAVIGATE TO SEARCH FOR TRAILS
+
+    The search interface is intuitive, familiar, and easy to use. For future enhancements you could consider adding fuzzy search/wildcard matching (i.e. searching for New* would return all hikes in New York, New Jersey, New Hampshire, and New Mexico).
+
+    5) NAVIGATE TO CREATE A TRIP
+
+    I like the point and click feel to adding an event. I really like the map at the bottom of the page where I can select an area and add trails close to my pin. This is especially useful if I was on a road trip. I think you could improve editing an event by having one submit button to save changes rather than three separate change buttons for each event field. 
+
+    6) CHOOSE THEME
+
+    This is a nice addition and fun to play around with.
+
+    SUMMARY
+
+    Overall, HikeAdvisor provided a nice and easy to use UI for finding hikes in areas of interest."
+    
+Evan Munro:
+
+Evan looked at my website Saturday, April 28. Evan goes on tons of hiking trips and plans them all himself. I thought Evan would be someone who might consistently use the site. These were his comments:
+    
+        "Feedback
+
+        What I liked
+
+        -Nice clean font
+
+        -Search page is flexible and easy to use
+
+        -Map loads really quickly and information appears about the trail very quickly. Overall I really like the map page.
+
+
+        To be improved
+
+        -Sign in window can’t be closed unless you sign in
+
+        -Maybe a home page to explain what the website does? Or I would just load the Map page first since that is the highlight of the website
+
+        -Maybe could have done some cleaning on the trials data (some of them don’t have much information and the thumbnails don’t show up"
+

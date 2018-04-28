@@ -1426,6 +1426,7 @@ export default {
         },
         
         searchCriteria(){
+            this.disMessage=false;
             var messages=[];
             var criteria=[];
             if (this.countrySelect!==''){
@@ -1810,6 +1811,8 @@ export default {
         font-size: 13pt;
         font-weight: 500;
         background-color: aliceblue;
+        border: solid thin black;
+        text-decoration: underline;
     }
     .searchQ:hover{
         background-color: aliceblue;

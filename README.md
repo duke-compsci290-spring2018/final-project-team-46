@@ -1,21 +1,4 @@
-# trails
-
-> A Vue.js project
-
-## Build Setup
-
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-```
-
-For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
+Anna Munro adm58
 
 Description:
 
@@ -36,21 +19,21 @@ Special instructions needed to set up, run, access, or use your application (lik
 
 The API keys are in secret.js and nothing else should need to be set up. 
 
-references for your data that establishes its authenticity-the data comes from the Mashape Trail API
+references for your data that establishes its authenticity-the data comes from the Marketplace Mashape Trail API (link: https://market.mashape.com/trailapi/trailapi). The API Marketplace was even included on Professor Duvall's list of ideas for data.
+This data was also used in the NRT Database (link: http://www.americantrails.org/NRTDatabase/), which was how I found the mashape API in the first place. From these links, I can see that the API holds real data.
 
 discuss both the pros and the cons of different framework possibilities you considered and why you made the decision you did (including choosing not to use any framework)
 -used: bootstrap, vue (map, calendar), d3, firebase
 I used vue as my main framework because I felt most familiar with it, and as I was planning for the project I could imagine what I wanted to do and how I would do it with vue. I knew how I would use it for the various features I wanted to make. I wanted to use d3 to visualize a map, I figured that it would be good to use d3 for the visualization and then google map component for the pins. I wanted to use d3 for the visualization because d3 is obviously made for visualizations and I thought it would work to make a good display of the map with the different hikes on it. However, I decided d3 is not my favourite framework, it was confusing to learn and I had difficulty doing what I thought would be more simple. (I would have liked to, for example, be able to zoom in on the map). Using vue for the map worked well too because I had practice working with the map from the mash-up lab and then I was also able to use the vue calendar component, which worked really well for creating the calendar. I used bootstrap for my styling because it creates nice grids, columns, lists and makes the styling and responsiveness of the site work well. I used firebase for my data since we I had used that for trello and knew that it would work well for what I wanted to do. Plus, it was really helpful to use firebase authentication. However, though firebase is great for pushing and changing data, I find it frustrating having to use a snapshot everytime I want to view data that is stored. 
 
-Anna Munro adm58
+Likewise, make the data from your site available to others in JSON format so they do not need to scrape your web site.--I have my data in json file. I don't have the trail data saved anywhere since I got that from the API.
 
-Likewise, make the data from your site available to others in JSON format so they do not need to scrape your web site.
+    
+USABILITY:
 
-export json data from firebase
+I first went throught the WAVE accessability tool and fixed the errors that I could, I was left with a few errors at the end that I was not exactly sure what they were (empty heading etc). I then gave my application to three people who I felt would be people who would be the type to use my application, generally just those who enjoy hiking and love to go on hiking trips. Their comments are in the usability folder.
 
-Regarding security, any API keys or passwords you use must be checked into your GitHub repository
-
-Your application must be accessible from GitHub Pages at all times
+RESOURCES:
 
 w3schools
 vue.js
@@ -79,6 +62,8 @@ https://www.npmjs.com/package/vue-simple-calendar
 DUVALL:
 -mash up lab
 -firebase authentication
+
+header image: http://enlightphoto.com/webpages/ca_EastBayHills/Contra_Costa_Photos_05-15.html
 
 TODO:
 *administrator
