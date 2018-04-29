@@ -92,15 +92,21 @@
         <div v-show="activityUS">
         <div>
             <h4>Search Activity</h4>
+            <div v-show="SEACT">
             <div v-for="activity in searchActivities">
                 <div>{{activity}}</div>
             </div>
+            <button @click="clearSearchAct">Clear Search Activity</button>
+                </div>
         </div>
       <br><br>
         <div>
             <h4>User Activity</h4>
+            <div v-show="USACT">
             <div v-for="activity in userActivity">
                 <div>{{activity}}</div>
+            </div>
+            <button @click="clearUserAct">Clear User Activity</button>
             </div>
         </div>
         </div>
@@ -554,6 +560,8 @@ export default {
         userStuff: false,
         userActivity: [],
         activityUS: false,
+        SEACT: false,
+        USACT: false,
     }
   },
     components: {
@@ -672,6 +680,8 @@ export default {
             
         },
         refreshSetUser(user){
+            this.USACT=false;
+            this.SEACT=false;
             this.searchAct=false;
             this.userAct=false;
             this.userStuff=false;
@@ -743,6 +753,9 @@ export default {
         },
         
         signedOut(){
+            this.activityUS=false;
+            this.USACT=false;
+            this.SEACT=false;
             this.searchAct=false;
             this.userAct=false;
             this.userStuff=false;
@@ -772,11 +785,14 @@ export default {
             db.ref("searchActivity").child("sactivities").once("value").then((snapshot)=>{
                 console.log(snapshot.val());
                 this.searchActivities=snapshot.val();
-            })
+            });
 
             db.ref("userActivity").child("activities").once("value").then((snapshot)=>{
                 this.userActivity=snapshot.val();
-            })
+            });
+            this.USACT=true;
+            this.SEACT=true;
+            
         },
         showUsers(){
             this.userStuff=true;
@@ -787,6 +803,9 @@ export default {
             this.planTrip=false;
             this.displayFaves=false;
             this.displayResults=false;
+            this.USACT=false;
+            this.SEACT=false;
+            
         },
         
         makeAdmin(user){
@@ -1003,6 +1022,7 @@ export default {
                 })
             })
             this.eventClickModal=false;
+            document.getElementById("eventClickModal").style.display="none";
             
         },
         
@@ -1032,6 +1052,8 @@ export default {
         },
         createTrip(){
             if (this.user){
+                this.USACT=false;
+                this.SEACT=false;
                 this.activityUS=false;
                 this.userStuff=false;
                 if (this.planTrip===false){
@@ -1247,6 +1269,8 @@ export default {
 //        },
         
         showMap(){
+            this.USACT=false;
+            this.SEACT=false;
             this.activityUS=false;
             this.userStuff=false;
             this.categDisplay=false;
@@ -1300,6 +1324,8 @@ export default {
         },
         
         showCategory(){
+            this.USACT=false;
+            this.SEACT=false;
             this.activityUS=false;
             this.userStuff=false;
             console.log(this.users)
@@ -1388,6 +1414,8 @@ export default {
         displayFavourites(){
             //this.searchAct=false;
             //this.userAct=false;
+            this.USACT=false;
+            this.SEACT=false;
             this.activityUS=false;
             this.userStuff=false;
             console.log("here")
@@ -1415,6 +1443,8 @@ export default {
         search(){
             //this.searchAct=false;
             //this.userAct=false;
+            this.USACT=false;
+            this.SEACT=false;
             this.activityUS=false;
             this.userStuff=false;
             this.categDisplay=false;
@@ -1619,11 +1649,21 @@ export default {
                 }
             }
             var date=new Date();
-            s=s+" ("+date+")"
-
-            console.log(s);
-            searchActRef.child("sactivities").push(s);
+            if (this.user){
+                s=this.user.name+" searched: "+s+" ("+date+")";
+                console.log(s);
+                db.ref("searchActivity").child("sactivities").push(s);
+            }
         },
+        
+        clearUserAct(){
+            db.ref("userActivity").child("activities").set([""]);
+            this.USACT=false;
+        },
+        clearSearchAct(){
+            db.ref("searchActivity").child("sactivities").set([""]);
+            this.SEACT=false;
+        }
     }
 }
 </script>
