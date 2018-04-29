@@ -60,11 +60,19 @@
             <option>Short</option>
     </select></label></button>
         <button @click="createTrip" class="nav col">Create a Trip</button>
+            <button @click="getDataStuff">HikeAdvisor Data</button>
         </div>
         </div>
 
         <br>
-        
+        <div v-show="getDat">
+            <p>The trail data from this website is from the <a href="https://market.mashape.com/trailapi/trailapi">mashape trail API.</a>You can get your own API key to get this data. Or you can click below to open a new window with the JSON data.</p>
+            <button @click="getTrailAPIData">Get Trail API Data in New Window</button>
+            <br><br>
+            <p>To get the current data from this website you can click below and it will open in a new window.</p>
+            <button @click="getMyData">Get HikeAdvisor Website Data</button>
+    
+        </div>
         <div v-show="categDisplay" id="display">
             <button class="categButtons" @click="displayFavourites" v-show="signedIn">See Favourite Hikes</button>
             <button v-show="signedIn" class="categButtons" @click="defaultCategory">Make Current Category Default</button>
@@ -373,8 +381,12 @@ var myRequest = new Request('https://trailapi-trailapi.p.mashape.com/', myInit);
 
 var allHikes=[];
 var circleS=[];
+    
+    
 fetch(myRequest).then(data=>data.json()).then(data=>{
     var i;
+    //var myWindow = window.open();
+    //myWindow.document.write(JSON.stringify(data));
     for (i=0; i< data.places.length; i++){
         if (data.places[i].activities.length!==0){
             var info={
@@ -562,6 +574,7 @@ export default {
         activityUS: false,
         SEACT: false,
         USACT: false,
+        getDat: false,
     }
   },
     components: {
@@ -629,6 +642,43 @@ export default {
         }
     },
     methods: {
+        getDataStuff(){
+            this.getDat=true;
+            this.activityUS=false;
+            this.USACT=false;
+            this.SEACT=false;
+            this.searchAct=false;
+            this.userAct=false;
+            this.userStuff=false;
+            this.signedIn=false;
+            this.categDisplay=false;
+            this.disMessage=false;
+            this.displayResults=false;
+            this.searchQs=false;
+            this.worldMap=false;
+            this.planTrip=false; 
+        },
+        getTrailAPIData(){
+            fetch(this.myRequest).then(data=>data.json()).then(data=>{
+                var myWindow = window.open();
+                myWindow.document.write(JSON.stringify(data));
+            });
+        },
+        getMyData(){
+            var myWindow=window.open();
+            db.ref("users").once("value").then((snapshot)=>{
+                console.log(snapshot.val());
+                myWindow.document.write(JSON.stringify(snapshot.val()));
+            });
+            db.ref("searchActivity").once("value").then((snapshot)=>{
+                console.log(snapshot.val());
+                 myWindow.document.write(JSON.stringify(snapshot.val()));
+            });
+            db.ref("userActivity").once("value").then((snapshot)=>{
+                console.log(snapshot.val());
+                myWindow.document.write(JSON.stringify(snapshot.val()));
+            });
+        },
         getUser () {
             return this.user;
         },
@@ -640,6 +690,7 @@ export default {
             }
             
             if (user!=null){
+                this.categDisplay=true;
                 var found=false;
                 this.signedIn=true;
                 var id=user.uid;
@@ -680,6 +731,7 @@ export default {
             
         },
         refreshSetUser(user){
+            this.getDat=false;
             this.USACT=false;
             this.SEACT=false;
             this.searchAct=false;
@@ -753,6 +805,7 @@ export default {
         },
         
         signedOut(){
+            this.getDat=false;
             this.activityUS=false;
             this.USACT=false;
             this.SEACT=false;
@@ -772,6 +825,7 @@ export default {
         },
         
         showActivity(){
+            this.getDat=false;
             this.activityUS=true;
             this.categDisplay=false;
             this.searchQs=false;
@@ -795,6 +849,7 @@ export default {
             
         },
         showUsers(){
+            this.getDat=false;
             this.userStuff=true;
             this.activityUS=false;
             this.categDisplay=false;
@@ -1052,6 +1107,7 @@ export default {
         },
         createTrip(){
             if (this.user){
+                this.getDat=false;
                 this.USACT=false;
                 this.SEACT=false;
                 this.activityUS=false;
@@ -1269,6 +1325,7 @@ export default {
 //        },
         
         showMap(){
+            this.getDat=false;
             this.USACT=false;
             this.SEACT=false;
             this.activityUS=false;
@@ -1324,6 +1381,7 @@ export default {
         },
         
         showCategory(){
+            this.getDat=false;
             this.USACT=false;
             this.SEACT=false;
             this.activityUS=false;
@@ -1412,6 +1470,7 @@ export default {
         },
         
         displayFavourites(){
+            this.getDat=false;
             //this.searchAct=false;
             //this.userAct=false;
             this.USACT=false;
@@ -1441,6 +1500,7 @@ export default {
         },
         
         search(){
+            this.getDat=false;
             //this.searchAct=false;
             //this.userAct=false;
             this.USACT=false;
