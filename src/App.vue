@@ -312,7 +312,7 @@
                         @click="showMarker(m)"
                     >
                     </gmap-marker>
-                    <a href="#addingEvent" v-smooth-scroll><gmap-circle
+                    <gmap-circle
                         v-for="(c, index) in circles"
                         :key="c.id"
                         :center="c.center"
@@ -321,7 +321,7 @@
                         @mouseover="infoText = c.text"
                         @mouseout="infoText = ''"
                         @click="addTrailEventFromCircle(c)"
-                    ></gmap-circle></a>
+                    ></gmap-circle>
                     <div slot="visible">
                         <div style="bottom: 0; left: 0; background-color: blue; color: white; position: absolute; z-index: 100">
                           {{infoText}}
