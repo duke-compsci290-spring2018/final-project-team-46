@@ -340,7 +340,7 @@
                         <p class="heading">"{{close.pin.name}}"</p>
                         <ul v-for="hike in close.hike">
                             <p class="closePinTrail" @click="openModal(hike)">{{hike[2].name}}</p>
-                            <a href="#empty" v-smooth-scroll><button @click="addTrailEvent(hike)">Add to Calendar</button></a>
+                            <a href="#empty" v-smooth-scroll @click="addTrailEvent(hike)">Add to Calendar</a>
                             <br><br>
                         </ul>
                     </li>
@@ -2004,4 +2004,14 @@ export default {
         font-size: 18pt;
         font-weight: 500;
     }
+    
+    a:link{
+        color: gray;
+    } 
+    a:visited{
+        color: darkgreen;
+    } 
+    a:hover{
+        color: black;
+    } 
 </style>
