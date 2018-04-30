@@ -1253,6 +1253,7 @@ export default {
                     }
                 })
             })
+            document.getElementById("markerModal").style.display="none";
             
         },
         
@@ -1984,6 +1985,10 @@ export default {
     .closePinTrail{
         font-size: 14pt;
         font-weight: 500;
+    }
+    .closePinTrail:hover{
+        cursor: pointer;
+        color: brown;
     }
     .title{
         font-weight: bold;
