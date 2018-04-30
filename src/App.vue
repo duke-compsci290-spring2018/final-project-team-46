@@ -1,7 +1,7 @@
 <template>
   <div id="app">
         <div id="themeM" v-show="themeModal" class="modal">
-            <h4>Choose a colour from the colour wheel for your background!</h4>
+            <p class="heading">Choose a colour from the colour wheel for your background!</p>
           <div @click="closeThemeModal()" class="close">&times;</div>
         <div class="modal-content">
             <label>Colour:<input id="colourWheel" v-model="colourChoice" type="color"></label>
@@ -16,7 +16,7 @@
             <div @click="closeModal()" class="close">&times;</div>
             <div class="modal-content">
                 <button id="addToFaves" @click="addToFaves" v-show="signedIn && normmodalOpen">Add to Favourites</button>
-                <h4 id="infoModal">{{infoModal}}</h4>
+                <p class="heading" id="infoModal">{{infoModal}}</p>
                 <p class="title">Location:</p>
                 <p id="locationModal">{{locationModal}}</p>
                 <p class="title">Activity:</p>
@@ -99,7 +99,7 @@
         
         <div v-show="activityUS">
         <div>
-            <h4>Search Activity</h4>
+            <p class="heading">Search Activity</p>
             <div v-show="SEACT">
             <div v-for="activity in searchActivities">
                 <div>{{activity}}</div>
@@ -109,7 +109,7 @@
         </div>
       <br><br>
         <div>
-            <h4>User Activity</h4>
+            <p class="heading">User Activity</p>
             <div v-show="USACT">
             <div v-for="activity in userActivity">
                 <div>{{activity}}</div>
@@ -119,7 +119,7 @@
         </div>
         </div>
         <div v-show="userStuff">
-            <h4>Users and Their Information</h4>
+            <p class="heading">Users and Their Information</p>
             <div id="userdisplay" v-for="user in users">
                 <p class="title">Name:</p>
                 <div>{{user.name}}</div>
@@ -139,7 +139,7 @@
         </div>
       
         <div v-show="searchQs" id="searchCriteria">
-            <h4>Search Criteria</h4>
+            <p class="heading">Search Criteria</p>
             <hr/>
             <div class="row" id="qrow">
             <div class="col-lg-4 col-md-5 col-sm">
@@ -191,7 +191,7 @@
         </div>
       <br>
         <div v-show="displayResults" id="searchResults">
-            <h4>Search Results</h4>
+            <p class="heading">Search Results</p>
             <hr/>
             <div id="row">
             <div class="col" id="resultsCol" v-for="traill in criteriaResults">
@@ -209,12 +209,13 @@
                 <svg id="svg"></svg>
             </div>
             <div id="other" class="col-lg-4">
-            <h4 id="info"></h4>
+            <p class="heading" id="info"></p>
                 <p id="location"></p>
                 <p id="activity"></p>
                 <p id="length"></p>
                 <div id="description"></div>
-                <a id="url"></a>
+                <br>
+                <a id="url" v-show="wait">More Trail Info</a>
                 <br>
                 <br>
                 <img id="pic" src="" alt="">
@@ -336,7 +337,7 @@
                 <ul v-for="close in closeBy">
                     <li>
                         <h3>Near by to your pin:</h3>
-                        <h4>"{{close.pin.name}}"</h4>
+                        <p class="heading">"{{close.pin.name}}"</p>
                         <ul v-for="hike in close.hike">
                             <p class="closePinTrail" @click="openModal(hike)">{{hike[2].name}}</p>
                             <a href="#empty" v-smooth-scroll><button @click="addTrailEvent(hike)">Add to Calendar</button></a>
@@ -575,6 +576,7 @@ export default {
         SEACT: false,
         USACT: false,
         getDat: false,
+        wait: false,
     }
   },
     components: {
@@ -1362,7 +1364,7 @@ export default {
                     .attr("r", "2px")
                     .attr("fill", "darkgreen")
                   //make hover so that will display info to the right
-                    .on("mouseover", function(d){
+                    .on("mouseover", (d)=>{
                         console.log(d[2]);
                         d3.select("#info").text("Trail Name: "+d[2].name);
                         d3.select("#location").text("Location: "+d[2].city);
@@ -1374,6 +1376,7 @@ export default {
                         d3.select("#url").text("More Trail Info");
                         d3.select("#pic").attr("src", d[2].pic);
                         d3.select("#pic").attr("alt", "trail thumbnail"); 
+                        this.wait=true;
                     })
             }
             //var zoom = d3.zoom()
@@ -1996,5 +1999,9 @@ export default {
     }
     #infoModal{
         text-align: center;
+    }
+    .heading{
+        font-size: 18pt;
+        font-weight: 500;
     }
 </style>

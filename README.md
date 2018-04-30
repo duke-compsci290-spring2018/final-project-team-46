@@ -1,6 +1,6 @@
 Anna Munro adm58
 
-Start: March 23 End: April 28 Hours(too many...70h??)
+Start: March 23 End: April 29 Hours(too many...75+h??)
 
 Description:
 
@@ -28,12 +28,12 @@ discuss both the pros and the cons of different framework possibilities you cons
 -used: bootstrap, vue (map, calendar), d3, firebase
 I used vue as my main framework because I felt most familiar with it, and as I was planning for the project I could imagine what I wanted to do and how I would do it with vue. I knew how I would use it for the various features I wanted to make. I wanted to use d3 to visualize a map, I figured that it would be good to use d3 for the visualization and then google map component for the pins. I wanted to use d3 for the visualization because d3 is obviously made for visualizations and I thought it would work to make a good display of the map with the different hikes on it. However, I decided d3 is not my favourite framework, it was confusing to learn and I had difficulty doing what I thought would be more simple. (I would have liked to, for example, be able to zoom in on the map). Using vue for the map worked well too because I had practice working with the map from the mash-up lab and then I was also able to use the vue calendar component, which worked really well for creating the calendar. I used bootstrap for my styling because it creates nice grids, columns, lists and makes the styling and responsiveness of the site work well. I used firebase for my data since we I had used that for trello and knew that it would work well for what I wanted to do. Plus, it was really helpful to use firebase authentication. However, though firebase is great for pushing and changing data, I find it frustrating having to use a snapshot everytime I want to view data that is stored. 
 
-Likewise, make the data from your site available to others in JSON format so they do not need to scrape your web site.--I have my data in a json file. I have the trail data saved in a json file as well. But I also included a button in the navbar where you can go and get either the current website data or the current trail data from the api. 
+Likewise, make the data from your site available to others in JSON format so they do not need to scrape your web site.--I have my data in a json file. I have the trail data saved in a json file as well. But I also included a button in the navbar of the webiste where you can go and get either the current website data or the current trail data from the api. 
 
     
 USABILITY:
 
-I first went throught the WAVE accessability tool and fixed the errors that I could, I was left with a few errors at the end that I was not exactly sure what they were (empty heading etc). I then gave my application to three people who I felt would be people who would be the type to use my application, generally just those who enjoy hiking and love to go on hiking trips. Their comments are in the usability folder.
+I first went throught the WAVE accessability tool and fixed the errors that I could, I was left with a few errors at the end that are unfortunately because of the Vue Calendar component. I then gave my application to three people who I felt would be people who would be the type to use my application, generally just those who enjoy hiking and love to go on hiking trips. Their comments are in the usability folder.
 
 RESOURCES:
 
