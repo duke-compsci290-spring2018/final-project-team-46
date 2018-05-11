@@ -692,7 +692,7 @@ export default {
             }
             
             if (user!=null){
-                this.categDisplay=true;
+                //this.categDisplay=true;
                 var found=false;
                 this.signedIn=true;
                 var id=user.uid;
